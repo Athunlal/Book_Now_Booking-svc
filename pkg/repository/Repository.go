@@ -2,7 +2,8 @@ package repository
 
 import (
 	"context"
-	"log"
+	"errors"
+	"fmt"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowBooking-svc/pkg/repository/interface"
@@ -13,6 +14,32 @@ import (
 
 type TrainDataBase struct {
 	DB *mongo.Database
+}
+
+// FindTrainByRoutid implements interfaces.BookingRepo.
+func (db *TrainDataBase) FindTrainByRoutid(ctx context.Context, train domain.Train) (domain.Train, error) {
+	filter := bson.M{"route": train.Route}
+	cur, err := db.DB.Collection("train").Find(ctx, filter)
+	if err != nil {
+		return domain.Train{}, err
+	}
+	defer cur.Close(ctx)
+
+	var trainNames []string
+	for cur.Next(ctx) {
+		var train domain.Train
+		if err := cur.Decode(&train); err != nil {
+			return domain.Train{}, err
+		}
+		trainNames = append(trainNames, train.TrainName)
+	}
+
+	if err := cur.Err(); err != nil {
+		return domain.Train{}, err
+	}
+
+	fmt.Println(trainNames)
+	return domain.Train{}, nil
 }
 
 // FindByStationName implements interfaces.BookingRepo.
@@ -57,50 +84,51 @@ func (db *TrainDataBase) FindroutebyName(ctx context.Context, route domain.Route
 }
 
 // SearchTrain implements interfaces.BookingRepo.
-func (db *TrainDataBase) SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
-	collectionTrain := db.DB.Collection("train")
+func (db *TrainDataBase) FindRouteId(ctx context.Context, searchData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
+	collectionRoute := db.DB.Collection("route")
 
-	sourceStationID := searcheData.SourceStationid
-	destinationStationID := searcheData.DestinationStationid
+	sourceStationID := searchData.SourceStationid
+	destinationStationID := searchData.DestinationStationid
 
-	pipeline := mongo.Pipeline{
-		{{Key: "$lookup", Value: bson.M{
-			"from":         "route",
-			"localField":   "route",
-			"foreignField": "_id",
-			"as":           "train_route",
-		}}},
-		{{Key: "$unwind", Value: "$train_route"}},
-		{{Key: "$match", Value: bson.M{
-			"train_route.routemap.stationid": bson.M{"$all": []primitive.ObjectID{sourceStationID, destinationStationID}},
-		}}},
+	var routeDoc struct {
+		ID       primitive.ObjectID `bson:"_id"`
+		Routemap []struct {
+			StationID primitive.ObjectID `bson:"stationid"`
+			// Add other fields you need, e.g., "time", "distance"
+		} `bson:"routemap"`
 	}
 
-	cur, err := collectionTrain.Aggregate(context.Background(), pipeline)
+	filter := bson.M{
+		"routemap.stationid": bson.M{
+			"$in": []primitive.ObjectID{sourceStationID, destinationStationID},
+		},
+	}
+
+	err := collectionRoute.FindOne(ctx, filter).Decode(&routeDoc)
 	if err != nil {
-		log.Printf("Error executing aggregation pipeline: %v\n", err)
 		return domain.SearchingTrainResponseData{}, err
 	}
-	defer cur.Close(context.Background())
 
-	var trains []domain.Train
-	for cur.Next(context.Background()) {
-		var train domain.Train
-		if err := cur.Decode(&train); err != nil {
-			log.Printf("Error decoding document: %v\n", err)
-			return domain.SearchingTrainResponseData{}, err
+	routeMap := routeDoc.Routemap
+
+	isTrue := false
+	for j, ch := range routeMap {
+		if ch.StationID == sourceStationID {
+			for i := j + 1; i < len(routeMap); i++ {
+				if routeMap[i].StationID == destinationStationID {
+					isTrue = true
+				}
+			}
 		}
-		trains = append(trains, train)
 	}
 
-	if err := cur.Err(); err != nil {
-		log.Printf("Error reading cursor: %v\n", err)
-		return domain.SearchingTrainResponseData{}, err
+	if isTrue {
+		return domain.SearchingTrainResponseData{
+			RouteID: routeDoc.ID,
+		}, nil
 	}
 
-	return domain.SearchingTrainResponseData{
-		SearcheResponse: trains,
-	}, nil
+	return domain.SearchingTrainResponseData{}, errors.New("No train find this route")
 }
 
 // ViewTrain implements interfaces.BookingRepo.

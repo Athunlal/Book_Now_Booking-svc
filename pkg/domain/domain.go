@@ -6,12 +6,14 @@ import (
 )
 
 type Train struct {
-	TrainNumber uint               `json:"trainNumber" bson:"trainNumber,omitempty"`
-	TrainName   string             `json:"trainName" bson:"trainName,omitempty" validate:"required,min=2,max=50"`
-	Route       primitive.ObjectID `json:"route,omitempty" bson:"route,omitempty"`
-	TrainType   string             `json:"traintype" bson:"traintype,omitempty"`
-	Seatsid     primitive.ObjectID `json:"seatid,omitempty" bson:"_id,omitempty"`
-	Compartment []Compartment      `json:"compartment,omitempty" bson:"compartment,omitempty"`
+	TrainNumber uint                `json:"trainNumber" bson:"trainNumber,omitempty"`
+	TrainName   string              `json:"trainName" bson:"trainName,omitempty" validate:"required,min=2,max=50"`
+	Route       primitive.ObjectID  `json:"route,omitempty" bson:"route,omitempty"`
+	TrainType   string              `json:"traintype" bson:"traintype,omitempty"`
+	Seatsid     primitive.ObjectID  `json:"seatid,omitempty" bson:"_id,omitempty"`
+	Distance    float32             `json:"distance" bson:"distance,omitempty"`
+	Time        primitive.Timestamp `json:"time" bson:"time,omitempty"`
+	Compartment []Compartment       `json:"compartment,omitempty" bson:"compartment,omitempty"`
 }
 type Compartment struct {
 	Seatid primitive.ObjectID `json:"seatid,omitempty" bson:"_id,omitempty"`
@@ -38,7 +40,8 @@ type SearchingTrainRequstedData struct {
 	DestinationStationid primitive.ObjectID `json:"destinationstationid,omitempty" bson:"destinationstationid,omitempty"`
 }
 type SearchingTrainResponseData struct {
-	SearcheResponse []Train `json:"searcheresponse,omitempty" bson:"searcheresponse,omitempty"`
+	RouteID         primitive.ObjectID `json:"routeID,omitempty" bson:"routeID,omitempty"`
+	SearcheResponse []Train            `json:"searcheresponse,omitempty" bson:"searcheresponse,omitempty"`
 }
 
 type SeatDetails struct {

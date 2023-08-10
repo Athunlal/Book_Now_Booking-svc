@@ -14,7 +14,8 @@ type BookingUseCase struct {
 
 // SearchTrain implements interfaces.TrainUseCase.
 func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
-	res, err := use.Repo.SearchTrain(ctx, searcheData)
+	res, err := use.Repo.FindRouteId(ctx, searcheData)
+
 	return res, err
 }
 
