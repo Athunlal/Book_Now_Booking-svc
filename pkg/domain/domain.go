@@ -40,8 +40,12 @@ type SearchingTrainRequstedData struct {
 	DestinationStationid primitive.ObjectID `json:"destinationstationid,omitempty" bson:"destinationstationid,omitempty"`
 }
 type SearchingTrainResponseData struct {
-	RouteID         primitive.ObjectID `json:"routeID,omitempty" bson:"routeID,omitempty"`
-	SearcheResponse []Train            `json:"searcheresponse,omitempty" bson:"searcheresponse,omitempty"`
+	TrainNames      []string `json:"trainname" bson:"trainname,omitempty"`
+	TrainName       string
+	RouteID         primitive.ObjectID     `json:"routeID,omitempty" bson:"routeID,omitempty"`
+	Time            *timestamppb.Timestamp `json:"time,omitempty" bson:"time,omitempty"`
+	Distance        float32                `json:"distance,omitempty" bson:"distance,omitempty"`
+	SearcheResponse []Train                `json:"searcheresponse,omitempty" bson:"searcheresponse,omitempty"`
 }
 
 type SeatDetails struct {

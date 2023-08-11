@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/athunlal/bookNowTrain-svc/pkg/domain"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -46,4 +47,19 @@ func SeateAllocation(seateData domain.SeatData) domain.Seats {
 	}
 
 	return allocated
+}
+
+// type Routemap []struct {
+// 	StationID primitive.ObjectID `bson:"stationid"`
+// }
+
+func RouteVerification(searchData domain.SearchingTrainRequstedData, Routemap []struct{ StationID primitive.ObjectID }) bool {
+
+	return false
+}
+
+func ConvertToPrimitiveTimestamp(pbTimestamp *timestamppb.Timestamp) primitive.Timestamp {
+	seconds := pbTimestamp.GetSeconds()
+	nanos := pbTimestamp.GetNanos()
+	return primitive.Timestamp{T: uint32(seconds), I: uint32(nanos)}
 }

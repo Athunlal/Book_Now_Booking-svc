@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowBooking-svc/pkg/repository/interface"
@@ -16,30 +15,44 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// FindTheRoutMapById implements interfaces.BookingRepo.
+func (db *TrainDataBase) FindTheRoutMapById(ctx context.Context, routeData domain.Route) (domain.Route, error) {
+	collectionRoute := db.DB.Collection("route")
+
+	var route domain.Route
+
+	filter := bson.M{"_id": routeData.RouteId}
+
+	err := collectionRoute.FindOne(ctx, filter).Decode(&route)
+	if err != nil {
+		return domain.Route{}, err
+	}
+	return route, nil
+}
+
 // FindTrainByRoutid implements interfaces.BookingRepo.
-func (db *TrainDataBase) FindTrainByRoutid(ctx context.Context, train domain.Train) (domain.Train, error) {
+func (db *TrainDataBase) FindTrainByRoutid(ctx context.Context, train domain.Train) (domain.SearchingTrainResponseData, error) {
+	var trainNames domain.SearchingTrainResponseData
+
 	filter := bson.M{"route": train.Route}
 	cur, err := db.DB.Collection("train").Find(ctx, filter)
 	if err != nil {
-		return domain.Train{}, err
+		return trainNames, err
 	}
 	defer cur.Close(ctx)
 
-	var trainNames []string
 	for cur.Next(ctx) {
 		var train domain.Train
 		if err := cur.Decode(&train); err != nil {
-			return domain.Train{}, err
+			return trainNames, err
 		}
-		trainNames = append(trainNames, train.TrainName)
+		trainNames.TrainNames = append(trainNames.TrainNames, train.TrainName)
 	}
 
 	if err := cur.Err(); err != nil {
-		return domain.Train{}, err
+		return trainNames, err
 	}
-
-	fmt.Println(trainNames)
-	return domain.Train{}, nil
+	return trainNames, nil
 }
 
 // FindByStationName implements interfaces.BookingRepo.
@@ -85,8 +98,8 @@ func (db *TrainDataBase) FindroutebyName(ctx context.Context, route domain.Route
 
 // SearchTrain implements interfaces.BookingRepo.
 func (db *TrainDataBase) FindRouteId(ctx context.Context, searchData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
-	collectionRoute := db.DB.Collection("route")
 
+	collectionRoute := db.DB.Collection("route")
 	sourceStationID := searchData.SourceStationid
 	destinationStationID := searchData.DestinationStationid
 
