@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package Booking;
 
-import "google/protobuf/timestamp.proto";
 
 
 option go_package = "./pkg/pb";
@@ -16,13 +15,17 @@ message SearchTrainRequest{
     string sourcestationid=2;
     string destinationstationid=3;
 }
+
 message SearchTrainResponse {
     int64 status = 1;
     string error = 2;
-    repeated TrainData traindata=3;
+    repeated TrainData traindata = 3;
 }
 
 message TrainData{
-    string trainname =1;
-    google.protobuf.Timestamp time = 2;
+    string trainname = 1;
+    int64 trainNumber =2;
+    string startingTime =3;
+    string endingtime = 4;
+    float  distance = 5;
 }

@@ -23,7 +23,6 @@ func NewBookingHandler(usecase interfaces.BookingUseCase) *BookingHandler {
 }
 
 func (h *BookingHandler) SearchTrain(ctx context.Context, req *pb.SearchTrainRequest) (*pb.SearchTrainResponse, error) {
-
 	sourceid, err := primitive.ObjectIDFromHex(req.Sourcestationid)
 	if err != nil {
 		log.Fatal("Converting the string to primitive.ObjectId err", err)
@@ -39,16 +38,28 @@ func (h *BookingHandler) SearchTrain(ctx context.Context, req *pb.SearchTrainReq
 	}
 
 	res, err := h.useCasse.SearchTrain(ctx, searchData)
-	response := &pb.SearchTrainResponse{
-		Traindata: make([]*pb.TrainData, len(res.SearcheResponse)), // Initialize the slice
-		Status:    http.StatusOK,
+	if err != nil {
+		return &pb.SearchTrainResponse{
+			Status: http.StatusUnprocessableEntity,
+			Error:  err.Error(),
+		}, err
 	}
 
-	for i, rs := range res.SearcheResponse {
-		response.Traindata[i] = &pb.TrainData{
-			Trainname: rs.TrainName,
-			Time:      nil,
+	// Convert the domain search result to protobuf TrainData
+	var trainDataList []*pb.TrainData
+	for i, _ := range res.TrainNames {
+		trainData := &pb.TrainData{
+			Trainname:    res.TrainNames[i],
+			TrainNumber:  int64(res.TrainNumber[i]),
+			StartingTime: res.StartingTime[i],
+			Endingtime:   res.EndingtingTime[i],
 		}
+		trainDataList = append(trainDataList, trainData)
+	}
+
+	response := &pb.SearchTrainResponse{
+		Status:    http.StatusOK,
+		Traindata: trainDataList,
 	}
 
 	return response, nil

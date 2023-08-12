@@ -32,27 +32,31 @@ func (db *TrainDataBase) FindTheRoutMapById(ctx context.Context, routeData domai
 
 // FindTrainByRoutid implements interfaces.BookingRepo.
 func (db *TrainDataBase) FindTrainByRoutid(ctx context.Context, train domain.Train) (domain.SearchingTrainResponseData, error) {
-	var trainNames domain.SearchingTrainResponseData
+	var trainData domain.SearchingTrainResponseData
 
 	filter := bson.M{"route": train.Route}
 	cur, err := db.DB.Collection("train").Find(ctx, filter)
 	if err != nil {
-		return trainNames, err
+		return trainData, err
 	}
 	defer cur.Close(ctx)
 
 	for cur.Next(ctx) {
 		var train domain.Train
 		if err := cur.Decode(&train); err != nil {
-			return trainNames, err
+			return trainData, err
 		}
-		trainNames.TrainNames = append(trainNames.TrainNames, train.TrainName)
+		trainData.TrainNames = append(trainData.TrainNames, train.TrainName)
+		trainData.TrainNumber = append(trainData.TrainNumber, train.TrainNumber)
+		trainData.Traintype = append(trainData.Traintype, train.TrainType)
+		trainData.StartingTime = append(trainData.StartingTime, train.StartingTime)
+		trainData.EndingtingTime = append(trainData.EndingtingTime, train.EndingtingTime)
 	}
 
 	if err := cur.Err(); err != nil {
-		return trainNames, err
+		return trainData, err
 	}
-	return trainNames, nil
+	return trainData, nil
 }
 
 // FindByStationName implements interfaces.BookingRepo.
@@ -107,7 +111,7 @@ func (db *TrainDataBase) FindRouteId(ctx context.Context, searchData domain.Sear
 		ID       primitive.ObjectID `bson:"_id"`
 		Routemap []struct {
 			StationID primitive.ObjectID `bson:"stationid"`
-			// Add other fields you need, e.g., "time", "distance"
+			Distace   float32            `bson:"distance"`
 		} `bson:"routemap"`
 	}
 
@@ -136,9 +140,18 @@ func (db *TrainDataBase) FindRouteId(ctx context.Context, searchData domain.Sear
 	}
 
 	if isTrue {
-		return domain.SearchingTrainResponseData{
-			RouteID: routeDoc.ID,
-		}, nil
+		response := domain.SearchingTrainResponseData{
+			RouteID:   routeDoc.ID,
+			Stationid: make([]primitive.ObjectID, len(routeMap)),
+			Distance:  make([]float32, len(routeMap)),
+		}
+
+		for i, ch := range routeMap {
+			response.Stationid[i] = ch.StationID
+			response.Distance[i] = ch.Distace
+		}
+
+		return response, nil
 	}
 
 	return domain.SearchingTrainResponseData{}, errors.New("No train find this route")

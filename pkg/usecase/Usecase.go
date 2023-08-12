@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowBooking-svc/pkg/repository/interface"
@@ -13,29 +12,13 @@ type BookingUseCase struct {
 	Repo interfaces.BookingRepo
 }
 
-// SearchTrain implements interfaces.TrainUseCase.
+// SearchTrain implements interfaces.BookingUseCase.
 func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
 	routeData, err := use.Repo.FindRouteId(ctx, searcheData)
-	route := domain.Train{
+	trainData, err := use.Repo.FindTrainByRoutid(ctx, domain.Train{
 		Route: routeData.RouteID,
-	}
-	routid := domain.Route{
-		RouteId: routeData.RouteID,
-	}
-	res1, err := use.Repo.FindTheRoutMapById(ctx, routid)
-	res2, err := use.Repo.FindTrainByRoutid(ctx, route)
-	response := domain.SearchingTrainResponseData{
-		TrainNames:      res2.TrainNames,
-		SearcheResponse: make([]domain.Train, len(res1.RouteMap)),
-	}
-
-	for i, data := range res1.RouteMap {
-		response.SearcheResponse[i].Distance = data.Distance
-	}
-
-	fmt.Println("Train name :", response.TrainNames)
-
-	return res2, err
+	})
+	return trainData, err
 }
 
 // ViewTrain implements interfaces.TrainUseCase.
