@@ -77,5 +77,6 @@ type SeatData struct {
 type TrainAndRouteData struct {
 	Routeid   primitive.ObjectID
 	TrainName []string
+	Stationid []primitive.ObjectID
 	Distace   []float32
 }
