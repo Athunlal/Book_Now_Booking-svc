@@ -19,7 +19,7 @@ type BookingRepo interface {
 	FindRouteId(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error)
 	FindTheRoutMapById(ctx context.Context, routeData domain.Route) (domain.Route, error)
 
-	GetSeatDetails(ctxctx context.Context, seatId primitive.ObjectID) (domain.Seats, error)
+	GetSeatDetails(ctxctx context.Context, seatId primitive.ObjectID) (domain.Compartment2, error)
 
 	ViewTrain(ctx context.Context) (*domain.SearchingTrainResponseData, error)
 	FindSeatbyCompartment(ctx context.Context, seat domain.Seats) (error, domain.Seats)

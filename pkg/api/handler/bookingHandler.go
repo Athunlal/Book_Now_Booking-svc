@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -30,37 +31,8 @@ func (h *BookingHandler) Booking(ctx context.Context, req *pb.BookingRequest) (*
 	bookingData := domain.Train{TrainId: trainid}
 
 	res, err := h.useCasse.Booking(ctx, bookingData)
-	if err != nil {
-		// Handle error if needed
-		return nil, err
-	}
-
-	bookingResponse := &pb.BookingResponse{
-		Compartment: []*pb.Compartment{},
-	}
-
-	for _, comp := range res.Compartment {
-		compartment := &pb.Compartment{
-			CompartmentName: res.Compartment[], // Assuming 'CompartmentName' is the correct field name
-			SeatDetails:     []*pb.SeatDetails{},
-		}
-
-		for _, seatDetail := range comp.SeatDetails {
-			seatDetailMsg := &pb.SeatDetails{
-				Price:          seatDetail.Price,
-				Isreserved:     seatDetail.IsReserved,
-				Seattype:       seatDetail.SeatType,
-				Seatnumber:     int64(seatDetail.SeatNumber),
-				Haspoweroutlet: seatDetail.HasPowerOutlet,
-			}
-
-			compartment.SeatDetails = append(compartment.SeatDetails, seatDetailMsg)
-		}
-
-		bookingResponse.Compartment = append(bookingResponse.Compartment, compartment)
-	}
-
-	return bookingResponse, nil
+	fmt.Println(res)
+	return &pb.BookingResponse{}, err
 }
 
 func (h *BookingHandler) SearchTrain(ctx context.Context, req *pb.SearchTrainRequest) (*pb.SearchTrainResponse, error) {

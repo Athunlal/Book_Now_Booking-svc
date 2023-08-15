@@ -16,18 +16,12 @@ type TrainDataBase struct {
 }
 
 // GetSeatDetails retrieves seat details based on seat ID
-func (db *TrainDataBase) GetSeatDetails(ctx context.Context, seatId primitive.ObjectID) (domain.Seats, error) {
+func (db *TrainDataBase) GetSeatDetails(ctx context.Context, seatId primitive.ObjectID) (domain.Compartment2, error) {
 	collectionSeat := db.DB.Collection("seat")
-	var seatData domain.Seats
-
+	var seatData domain.Compartment2
 	filter := bson.M{"_id": seatId}
-
 	err := collectionSeat.FindOne(ctx, filter).Decode(&seatData)
-	if err != nil {
-		return domain.Seats{}, err
-	}
-
-	return seatData, nil
+	return seatData, err
 }
 
 // FindTrianById implements interfaces.BookingRepo.

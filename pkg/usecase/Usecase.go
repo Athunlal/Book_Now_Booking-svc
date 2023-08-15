@@ -13,40 +13,21 @@ type BookingUseCase struct {
 }
 
 // Booking implements interfaces.BookingUseCase.
-func (use *BookingUseCase) Booking(ctx context.Context, trainid domain.Train) (domain.SeatsForBookingResponse, error) {
+func (use *BookingUseCase) Booking(ctx context.Context, trainid domain.Train) (domain.BookingResponse, error) {
 	trainData, err := use.Repo.FindTrianById(ctx, trainid)
-	var compartmentDetails domain.SeatsForBookingResponse
-
-	for i, comp := range trainData.Compartment {
-		seatData, err := use.Repo.GetSeatDetails(ctx, comp.Seatid)
-		if err != nil {
-			return compartmentDetails, err
+	response := domain.BookingResponse{
+		CompartmentDetails: make([]domain.CompartmentDetails, len(trainData.Compartment)),
+	}
+	for i, ch := range trainData.Compartment {
+		response.CompartmentDetails[i].SeatIds = ch.Seatid
+		response.CompartmentDetails[i].Price = ch.
+		compartmentDetails := domain.CompartmentDetails{
+			SeatDetails: make([]domain.SeatDetail, len(ch.Seatid)),
 		}
-
-		compartmentDetails.SeatId = append(compartmentDetails.SeatId, seatData.SeatId)
-		compartmentDetails.Price = append(compartmentDetails.Price, seatData.Price)
-		compartmentDetails.Availability = append(compartmentDetails.Availability, seatData.Availability)
-		compartmentDetails.TypeOfSeat = append(compartmentDetails.TypeOfSeat, seatData.TypeOfSeat)
-
-		seatDetails := domain.SeatDetailsForBookingRespose{
-			SeatNumber:     []int{},
-			SeatType:       []string{},
-			IsReserved:     []bool{},
-			HasPowerOutlet: []bool{},
-		}
-
-		for _, seat := range seatData.SeatDetails {
-			seatDetails.SeatNumber = append(seatDetails.SeatNumber, seat.SeatNumber)
-			seatDetails.SeatType = append(seatDetails.SeatType, seat.SeatType)
-			seatDetails.IsReserved = append(seatDetails.IsReserved, seat.IsReserved)
-			seatDetails.HasPowerOutlet = append(seatDetails.HasPowerOutlet, seat.HasPowerOutlet)
-		}
-
-		compartmentDetails.SeatDetails = append(compartmentDetails.SeatDetails, seatDetails)
-		compartmentDetails.SeatId = append(compartmentDetails.SeatId, trainData.Compartment[i].Seatid)
+		
 	}
 
-	return compartmentDetails, err
+	return response, err
 }
 
 // SearchTrain implements interfaces.BookingUseCase.
