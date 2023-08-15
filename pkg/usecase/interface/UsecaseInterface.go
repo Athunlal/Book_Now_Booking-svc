@@ -9,4 +9,5 @@ import (
 type BookingUseCase interface {
 	SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error)
 	ViewTrain(ctx context.Context) (*domain.SearchingTrainResponseData, error)
+	Booking(ctx context.Context, trainid domain.Train) (domain.SeatsForBookingResponse, error)
 }

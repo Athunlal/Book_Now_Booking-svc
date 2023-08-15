@@ -15,6 +15,35 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// GetSeatDetails retrieves seat details based on seat ID
+func (db *TrainDataBase) GetSeatDetails(ctx context.Context, seatId primitive.ObjectID) (domain.Seats, error) {
+	collectionSeat := db.DB.Collection("seat")
+	var seatData domain.Seats
+
+	filter := bson.M{"_id": seatId}
+
+	err := collectionSeat.FindOne(ctx, filter).Decode(&seatData)
+	if err != nil {
+		return domain.Seats{}, err
+	}
+
+	return seatData, nil
+}
+
+// FindTrianById implements interfaces.BookingRepo.
+func (db *TrainDataBase) FindTrianById(ctx context.Context, train domain.Train) (domain.Train, error) {
+	collectionRoute := db.DB.Collection("train")
+	var trainData domain.Train
+
+	filter := bson.M{"_id": train.TrainId}
+
+	err := collectionRoute.FindOne(ctx, filter).Decode(&trainData)
+	if err != nil {
+		return domain.Train{}, err
+	}
+	return trainData, nil
+}
+
 // FindTheRoutMapById implements interfaces.BookingRepo.
 func (db *TrainDataBase) FindTheRoutMapById(ctx context.Context, routeData domain.Route) (domain.Route, error) {
 	collectionRoute := db.DB.Collection("route")
@@ -46,6 +75,7 @@ func (db *TrainDataBase) FindTrainByRoutid(ctx context.Context, train domain.Tra
 		if err := cur.Decode(&train); err != nil {
 			return trainData, err
 		}
+		trainData.TrainId = append(trainData.TrainId, train.TrainId.Hex())
 		trainData.TrainNames = append(trainData.TrainNames, train.TrainName)
 		trainData.TrainNumber = append(trainData.TrainNumber, train.TrainNumber)
 		trainData.Traintype = append(trainData.Traintype, train.TrainType)

@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BookingManagementClient interface {
 	SearchTrain(ctx context.Context, in *SearchTrainRequest, opts ...grpc.CallOption) (*SearchTrainResponse, error)
+	Booking(ctx context.Context, in *BookingRequest, opts ...grpc.CallOption) (*BookingResponse, error)
 }
 
 type bookingManagementClient struct {
@@ -38,11 +39,21 @@ func (c *bookingManagementClient) SearchTrain(ctx context.Context, in *SearchTra
 	return out, nil
 }
 
+func (c *bookingManagementClient) Booking(ctx context.Context, in *BookingRequest, opts ...grpc.CallOption) (*BookingResponse, error) {
+	out := new(BookingResponse)
+	err := c.cc.Invoke(ctx, "/Booking.BookingManagement/Booking", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BookingManagementServer is the server API for BookingManagement service.
 // All implementations must embed UnimplementedBookingManagementServer
 // for forward compatibility
 type BookingManagementServer interface {
 	SearchTrain(context.Context, *SearchTrainRequest) (*SearchTrainResponse, error)
+	Booking(context.Context, *BookingRequest) (*BookingResponse, error)
 	mustEmbedUnimplementedBookingManagementServer()
 }
 
@@ -52,6 +63,9 @@ type UnimplementedBookingManagementServer struct {
 
 func (UnimplementedBookingManagementServer) SearchTrain(context.Context, *SearchTrainRequest) (*SearchTrainResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchTrain not implemented")
+}
+func (UnimplementedBookingManagementServer) Booking(context.Context, *BookingRequest) (*BookingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Booking not implemented")
 }
 func (UnimplementedBookingManagementServer) mustEmbedUnimplementedBookingManagementServer() {}
 
@@ -84,6 +98,24 @@ func _BookingManagement_SearchTrain_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BookingManagement_Booking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BookingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookingManagementServer).Booking(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Booking.BookingManagement/Booking",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookingManagementServer).Booking(ctx, req.(*BookingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BookingManagement_ServiceDesc is the grpc.ServiceDesc for BookingManagement service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -94,6 +126,10 @@ var BookingManagement_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SearchTrain",
 			Handler:    _BookingManagement_SearchTrain_Handler,
+		},
+		{
+			MethodName: "Booking",
+			Handler:    _BookingManagement_Booking_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

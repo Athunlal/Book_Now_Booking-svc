@@ -2,12 +2,32 @@ syntax = "proto3";
 
 package Booking;
 
-
-
 option go_package = "./pkg/pb";
 
 service BookingManagement {
     rpc SearchTrain(SearchTrainRequest) returns (SearchTrainResponse) {} 
+    rpc Booking(BookingRequest)returns(BookingResponse){}
+}
+
+//Booking
+message BookingRequest{
+    string trainid = 1;
+}
+message BookingResponse{
+   repeated compartment compartment = 1;
+}
+message compartment{
+    string seatid = 1;
+    string price = 2;
+    string typeofseat =3;
+    string CompartmentName =4;
+    repeated seatDetails seatDetails =5;
+}
+message seatDetails{
+    string price = 1;
+    string isreserved = 2;
+    string seattype = 3;
+    int64 seatnumber = 4;
 }
 //Search train 
 message SearchTrainRequest{
@@ -28,4 +48,5 @@ message TrainData{
     string startingTime =3;
     string endingtime = 4;
     float  distance = 5;
+    string trainid = 6;
 }

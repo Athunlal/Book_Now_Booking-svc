@@ -6,16 +6,17 @@ import (
 )
 
 type Train struct {
-	TrainNumber    uint                `json:"trainNumber" bson:"trainNumber,omitempty"`
-	TrainName      string              `json:"trainName" bson:"trainName,omitempty" validate:"required,min=2,max=50"`
-	Route          primitive.ObjectID  `json:"route,omitempty" bson:"route,omitempty"`
-	TrainType      string              `json:"traintype" bson:"traintype,omitempty"`
-	StartingTime   string              `json:"startingtime,omitempty" bson:"startingtime,omitempty"`
-	EndingtingTime string              `json:"endingtingtime,omitempty" bson:"endingtingtime,omitempty"`
-	Seatsid        primitive.ObjectID  `json:"seatid,omitempty" bson:"_id,omitempty"`
-	Distance       float32             `json:"distance" bson:"distance,omitempty"`
-	Time           primitive.Timestamp `json:"time" bson:"time,omitempty"`
-	Compartment    []Compartment       `json:"compartment,omitempty" bson:"compartment,omitempty"`
+	TrainId        primitive.ObjectID `json:"trainid,omitempty" bson:"_id,omitempty"`
+	TrainNumber    uint               `json:"trainNumber" bson:"trainNumber,omitempty"`
+	TrainName      string             `json:"trainName" bson:"trainName,omitempty" validate:"required,min=2,max=50"`
+	Route          primitive.ObjectID `json:"route,omitempty" bson:"route,omitempty"`
+	TrainType      string             `json:"traintype" bson:"traintype,omitempty"`
+	StartingTime   string             `json:"startingtime,omitempty" bson:"startingtime,omitempty"`
+	EndingtingTime string             `json:"endingtingtime,omitempty" bson:"endingtingtime,omitempty"`
+	// Seatsid        primitive.ObjectID  `json:"seatid,omitempty" bson:"_id,omitempty"`
+	Distance    float32             `json:"distance" bson:"distance,omitempty"`
+	Time        primitive.Timestamp `json:"time" bson:"time,omitempty"`
+	Compartment []Compartment       `json:"compartment,omitempty" bson:"compartment,omitempty"`
 }
 type Compartment struct {
 	Seatid primitive.ObjectID `json:"seatid,omitempty" bson:"_id,omitempty"`
@@ -42,6 +43,7 @@ type SearchingTrainRequstedData struct {
 	DestinationStationid primitive.ObjectID `json:"destinationstationid,omitempty" bson:"destinationstationid,omitempty"`
 }
 type SearchingTrainResponseData struct {
+	TrainId         []string
 	TrainNames      []string           `json:"trainname" bson:"trainname,omitempty"`
 	RouteID         primitive.ObjectID `json:"routeID,omitempty" bson:"routeID,omitempty"`
 	TrainNumber     []uint             `json:"trainNumber" bson:"trainNumber,omitempty"`
@@ -54,6 +56,7 @@ type SearchingTrainResponseData struct {
 }
 
 type SeatDetails struct {
+	Seatid         primitive.ObjectID
 	SeatNumber     int    `json:"seatnumber,omitempty" bson:"seatnumber,omitempty"`
 	SeatType       string `json:"seattype,omitempty" bson:"seattype,omitempty"`
 	IsReserved     bool   `json:"isreserved,omitempty" bson:"isreserved,omitempty"`
@@ -61,11 +64,28 @@ type SeatDetails struct {
 }
 
 type Seats struct {
-	Price        int           `json:"price,omitempty" bson:"price,omitempty"`
-	Availability bool          `json:"availability,omitempty" bson:"availability,omitempty"`
-	TypeOfSeat   string        `json:"typeofseate,omitempty" bson:"typeofseate,omitempty"`
-	Compartment  string        `json:"compartment,omitempty" bson:"compartment,omitempty"`
-	SeatDetails  []SeatDetails `json:"seatDetails,omitempty" bson:"seatDetails,omitempty"`
+	SeatId       primitive.ObjectID `json:"seatid,omitempty" bson:"seatid,omitempty"`
+	Price        int                `json:"price,omitempty" bson:"price,omitempty"`
+	Availability bool               `json:"availability,omitempty" bson:"availability,omitempty"`
+	TypeOfSeat   string             `json:"typeofseate,omitempty" bson:"typeofseate,omitempty"`
+	Compartment  string             `json:"compartment,omitempty" bson:"compartment,omitempty"`
+	SeatDetails  []SeatDetails      `json:"seatDetails,omitempty" bson:"seatDetails,omitempty"`
+}
+
+type SeatDetailsForBookingRespose struct {
+	Seatid         []primitive.ObjectID
+	SeatNumber     []int    `json:"seatnumber,omitempty" bson:"seatnumber,omitempty"`
+	SeatType       []string `json:"seattype,omitempty" bson:"seattype,omitempty"`
+	IsReserved     []bool   `json:"isreserved,omitempty" bson:"isreserved,omitempty"`
+	HasPowerOutlet []bool   `json:"haspoweroutlet,omitempty" bson:"haspoweroutlet,omitempty"`
+}
+type SeatsForBookingResponse struct {
+	SeatId       []primitive.ObjectID           `json:"seatid,omitempty" bson:"seatid,omitempty"`
+	Price        []int                          `json:"price,omitempty" bson:"price,omitempty"`
+	Availability []bool                         `json:"availability,omitempty" bson:"availability,omitempty"`
+	TypeOfSeat   []string                       `json:"typeofseate,omitempty" bson:"typeofseate,omitempty"`
+	Compartment  []string                       `json:"compartment,omitempty" bson:"compartment,omitempty"`
+	SeatDetails  []SeatDetailsForBookingRespose `json:"seatDetails,omitempty" bson:"seatDetails,omitempty"`
 }
 type SeatData struct {
 	Price         float32
@@ -79,4 +99,12 @@ type TrainAndRouteData struct {
 	TrainName []string
 	Stationid []primitive.ObjectID
 	Distace   []float32
+}
+
+type BookingResponse struct {
+	TrainName    string
+	TrainType    string
+	StartingTime string
+	EndingTime   string
+	Compartment  []Seats
 }
