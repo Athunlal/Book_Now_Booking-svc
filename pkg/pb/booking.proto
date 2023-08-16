@@ -6,29 +6,30 @@ option go_package = "./pkg/pb";
 
 service BookingManagement {
     rpc SearchTrain(SearchTrainRequest) returns (SearchTrainResponse) {} 
-    rpc Booking(BookingRequest)returns(BookingResponse){}
+    rpc SearchCompartment(SearchCompartmentRequest)returns(SearchCompartmentResponse){}
 }
 
 //Booking
-message BookingRequest{
+message SearchCompartmentRequest{
     string trainid = 1;
 }
-message BookingResponse{
+message SearchCompartmentResponse{
    repeated compartment compartment = 1;
 }
 message compartment{
-    string seatid = 1;
+    string compartmentid = 1;
     string price = 2;
     string typeofseat =3;
     string CompartmentName =4;
-    repeated seatDetails seatDetails =5;
+    string availablitystatus = 5;
+    // repeated seatDetails seatDetails =5;
 }
-message seatDetails{
-    string price = 1;
-    string isreserved = 2;
-    string seattype = 3;
-    int64 seatnumber = 4;
-}
+// message seatDetails{
+//     string price = 1;
+//     string isreserved = 2;
+//     string seattype = 3;
+//     int64 seatnumber = 4;
+// }
 //Search train 
 message SearchTrainRequest{
     string date =1;

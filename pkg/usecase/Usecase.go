@@ -15,19 +15,39 @@ type BookingUseCase struct {
 // Booking implements interfaces.BookingUseCase.
 func (use *BookingUseCase) Booking(ctx context.Context, trainid domain.Train) (domain.BookingResponse, error) {
 	trainData, err := use.Repo.FindTrianById(ctx, trainid)
+	if err != nil {
+		return domain.BookingResponse{}, err
+	}
+
 	response := domain.BookingResponse{
 		CompartmentDetails: make([]domain.CompartmentDetails, len(trainData.Compartment)),
 	}
-	for i, ch := range trainData.Compartment {
-		response.CompartmentDetails[i].SeatIds = ch.Seatid
-		response.CompartmentDetails[i].Price = ch.
-		compartmentDetails := domain.CompartmentDetails{
-			SeatDetails: make([]domain.SeatDetail, len(ch.Seatid)),
+
+	for i, compartment := range trainData.Compartment {
+		res, err := use.Repo.GetSeatDetails(ctx, compartment.Seatid)
+		if err != nil {
+			return domain.BookingResponse{}, err
 		}
-		
+
+		response.CompartmentDetails[i].SeatIds = compartment.Seatid
+		response.CompartmentDetails[i].Price = res.Price
+		response.CompartmentDetails[i].Availability = res.Availability
+		response.CompartmentDetails[i].TypeOfSeat = res.TypeOfSeat
+		response.CompartmentDetails[i].Compartment = res.Compartment
+
+		seatDetails := make([]domain.SeatDetail, len(res.SeatDetails))
+		for j, seatDetail := range res.SeatDetails {
+			seatDetails[j] = domain.SeatDetail{
+				SeatNumbers:    seatDetail.SeatNumber,
+				SeatType:       seatDetail.SeatType,
+				IsReserved:     seatDetail.IsReserved,
+				HasPowerOutlet: seatDetail.HasPowerOutlet,
+			}
+		}
+		response.CompartmentDetails[i].SeatDetails = seatDetails
 	}
 
-	return response, err
+	return response, nil
 }
 
 // SearchTrain implements interfaces.BookingUseCase.

@@ -2,9 +2,9 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	"github.com/athunlal/bookNowBooking-svc/pkg/pb"
@@ -23,16 +23,50 @@ func NewBookingHandler(usecase interfaces.BookingUseCase) *BookingHandler {
 	}
 }
 
-func (h *BookingHandler) Booking(ctx context.Context, req *pb.BookingRequest) (*pb.BookingResponse, error) {
-	trainid, err := primitive.ObjectIDFromHex(req.Trainid)
+func (h *BookingHandler) SearchCompartment(ctx context.Context, req *pb.SearchCompartmentRequest) (*pb.SearchCompartmentResponse, error) {
+	trainID, err := primitive.ObjectIDFromHex(req.Trainid)
 	if err != nil {
-		log.Fatal("Converting the string to primitive.ObjectId err", err)
+		return nil, err
 	}
-	bookingData := domain.Train{TrainId: trainid}
 
+	bookingData := domain.Train{TrainId: trainID}
 	res, err := h.useCasse.Booking(ctx, bookingData)
-	fmt.Println(res)
-	return &pb.BookingResponse{}, err
+	if err != nil {
+		return nil, err
+	}
+
+	// Construct BookingResponse
+	bookingResponse := &pb.SearchCompartmentResponse{
+		Compartment: make([]*pb.Compartment, len(res.CompartmentDetails)),
+	}
+
+	for i, compartment := range res.CompartmentDetails {
+		var status string
+		if compartment.Availability {
+			status = "Available"
+		}
+		pbCompartment := &pb.Compartment{
+			Compartmentid:     compartment.SeatIds.Hex(),
+			Price:             strconv.Itoa(compartment.Price),
+			Typeofseat:        compartment.TypeOfSeat,
+			CompartmentName:   compartment.Compartment,
+			Availablitystatus: status,
+			// SeatDetails:     make([]*pb.SeatDetails, len(compartment.SeatDetails)),
+		}
+
+		// for j, seatDetail := range compartment.SeatDetails {
+		// 	pbSeatDetail := &pb.SeatDetails{
+		// 		Isreserved: strconv.FormatBool(seatDetail.IsReserved),
+		// 		Seattype:   seatDetail.SeatType,
+		// 		Seatnumber: int64(seatDetail.SeatNumbers),
+		// 	}
+		// 	pbCompartment.SeatDetails[j] = pbSeatDetail
+		// }
+
+		bookingResponse.Compartment[i] = pbCompartment
+	}
+
+	return bookingResponse, nil
 }
 
 func (h *BookingHandler) SearchTrain(ctx context.Context, req *pb.SearchTrainRequest) (*pb.SearchTrainResponse, error) {

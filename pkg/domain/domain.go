@@ -81,11 +81,11 @@ type CompartmentDetails struct {
 	SeatDetails  []SeatDetail
 }
 type SeatDetail struct {
-	SeatNumbers    []int
-	SeatType       []string
-	SeatPosition   []string
-	IsReserved     []bool
-	HasPowerOutlet []bool
+	SeatNumbers    int
+	SeatType       string
+	SeatPosition   string
+	IsReserved     bool
+	HasPowerOutlet bool
 }
 type BookingResponse struct {
 	CompartmentDetails []CompartmentDetails
