@@ -52,7 +52,7 @@ func (use *BookingUseCase) Booking(ctx context.Context, trainid domain.Train) (d
 
 // SearchTrain implements interfaces.BookingUseCase.
 func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
-	routeData, err := use.Repo.FindRouteId(ctx, searcheData)
+	routeData, err := use.Repo.FindRouteById(ctx, searcheData)
 	trainData, err := use.Repo.FindTrainByRoutid(ctx, domain.Train{
 		Route: routeData.RouteID,
 	})

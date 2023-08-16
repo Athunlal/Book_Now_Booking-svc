@@ -2,15 +2,13 @@ package repository
 
 import (
 	"context"
-	"errors"
-	"time"
+	"log"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowBooking-svc/pkg/repository/interface"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type TrainDataBase struct {
@@ -127,73 +125,64 @@ func (db *TrainDataBase) FindroutebyName(ctx context.Context, route domain.Route
 }
 
 // SearchTrain implements interfaces.BookingRepo.
-func (db *TrainDataBase) FindRouteId(ctx context.Context, searchData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
-	collectionRoute := db.DB.Collection("route")
+func (db *TrainDataBase) FindRouteById(ctx context.Context, searchData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
+	collection := db.DB.Collection("route")
 	sourceStationID := searchData.SourceStationid
 	destinationStationID := searchData.DestinationStationid
 
-	var routeDoc struct {
-		ID       primitive.ObjectID `bson:"_id"`
-		Routemap []struct {
-			StationID primitive.ObjectID `bson:"stationid"`
-			Distance  float32            `bson:"distance"`
-		} `bson:"routemap"`
-	}
-
-	// Use aggregation to find the index of the source and destination stations
 	pipeline := []bson.M{
 		{
 			"$match": bson.M{
-				"routemap.stationid": bson.M{
-					"$in": []primitive.ObjectID{sourceStationID, destinationStationID},
+				"$or": []bson.M{
+					{"routemap.stationid": sourceStationID},
+					{"routemap.stationid": destinationStationID},
 				},
 			},
 		},
 		{
 			"$addFields": bson.M{
-				"sourceIndex": bson.M{
-					"$indexOfArray": []interface{}{
-						"$routemap.stationid", sourceStationID,
-					},
+				"sstationIndex": bson.M{
+					"$indexOfArray": []interface{}{"$routemap.stationid", sourceStationID},
+				},
+				"dstationIndex": bson.M{
+					"$indexOfArray": []interface{}{"$routemap.stationid", destinationStationID},
 				},
 			},
 		},
 		{
 			"$match": bson.M{
-				"routemap.stationid": destinationStationID,
-				"sourceIndex":        bson.M{"$gt": 0},
+				"$expr": bson.M{
+					"$and": []bson.M{
+						{"$ne": []interface{}{"$sstationIndex", -1}},
+						{"$ne": []interface{}{"$dstationIndex", -1}},
+						{"$lt": []interface{}{"$sstationIndex", "$dstationIndex"}},
+					},
+				},
+			},
+		},
+		{
+			"$project": bson.M{
+				"_id":       1,
+				"routename": 1,
 			},
 		},
 	}
-
-	opts := options.Aggregate().SetMaxTime(2 * time.Second) // Set a reasonable max execution time
-
-	cursor, err := collectionRoute.Aggregate(ctx, pipeline, opts)
+	cursor, err := collection.Aggregate(context.Background(), pipeline)
 	if err != nil {
-		return domain.SearchingTrainResponseData{}, err
+		log.Fatal(err)
 	}
-	defer cursor.Close(ctx)
+	defer cursor.Close(context.Background())
 
-	if !cursor.Next(ctx) {
-		return domain.SearchingTrainResponseData{}, errors.New("No train found for this route")
+	var results []domain.RouteResult
+
+	if err := cursor.All(context.Background(), &results); err != nil {
+		log.Fatal(err)
 	}
-
-	if err := cursor.Decode(&routeDoc); err != nil {
-		return domain.SearchingTrainResponseData{}, err
-	}
-
-	response := domain.SearchingTrainResponseData{
-		RouteID:   routeDoc.ID,
-		Stationid: make([]primitive.ObjectID, len(routeDoc.Routemap)),
-		Distance:  make([]float32, len(routeDoc.Routemap)),
-	}
-
-	for i, ch := range routeDoc.Routemap {
-		response.Stationid[i] = ch.StationID
-		response.Distance[i] = ch.Distance
-	}
-
-	return response, nil
+	routeid, err := primitive.ObjectIDFromHex(results[0].ID)
+	return domain.SearchingTrainResponseData{
+		RouteID:   routeid,
+		RouteName: results[0].RouteName,
+	}, err
 }
 
 // ViewTrain implements interfaces.BookingRepo.

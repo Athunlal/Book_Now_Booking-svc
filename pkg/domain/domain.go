@@ -45,10 +45,11 @@ type SearchingTrainResponseData struct {
 	TrainId         []string
 	TrainNames      []string           `json:"trainname" bson:"trainname,omitempty"`
 	RouteID         primitive.ObjectID `json:"routeID,omitempty" bson:"routeID,omitempty"`
-	TrainNumber     []uint             `json:"trainNumber" bson:"trainNumber,omitempty"`
-	Traintype       []string           `json:"traintype" bson:"traintype,omitempty"`
-	StartingTime    []string           `json:"startingtime,omitempty" bson:"startingtime,omitempty"`
-	EndingtingTime  []string           `json:"endingtingtime,omitempty" bson:"endingtingtime,omitempty"`
+	RouteName       string
+	TrainNumber     []uint   `json:"trainNumber" bson:"trainNumber,omitempty"`
+	Traintype       []string `json:"traintype" bson:"traintype,omitempty"`
+	StartingTime    []string `json:"startingtime,omitempty" bson:"startingtime,omitempty"`
+	EndingtingTime  []string `json:"endingtingtime,omitempty" bson:"endingtingtime,omitempty"`
 	Stationid       []primitive.ObjectID
 	Distance        []float32 `json:"distance,omitempty" bson:"distance,omitempty"`
 	SearcheResponse []Train   `json:"searcheresponse,omitempty" bson:"searcheresponse,omitempty"`
@@ -120,4 +121,11 @@ type Compartment2 struct {
 	TypeOfSeat   string             `json:"typeofseate,omitempty" bson:"typeofseate,omitempty"`
 	Compartment  string             `json:"compartment,omitempty" bson:"compartment,omitempty"`
 	SeatDetails  []SeatDetail2      `json:"seatDetails,omitempty" bson:"seatDetails,omitempty"`
+}
+type RouteResult struct {
+	ID        string `bson:"_id"`
+	RouteName string `bson:"routename"`
+}
+type RouteResponse struct {
+	RouteResult []RouteResult
 }
