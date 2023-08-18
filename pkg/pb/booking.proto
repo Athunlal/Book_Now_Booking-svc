@@ -7,9 +7,21 @@ option go_package = "./pkg/pb";
 service BookingManagement {
     rpc SearchTrain(SearchTrainRequest) returns (SearchTrainResponse) {} 
     rpc SearchCompartment(SearchCompartmentRequest)returns(SearchCompartmentResponse){}
+    rpc BookTicket(BookTiketRequest)returns(BookTiketResponse){}
 }
 
-//Booking
+//Ticket booking 
+message BookTiketRequest{
+    string compartmentid = 1;
+    string trainId = 2;
+}
+message BookTiketResponse{
+    int64 status = 1;
+    string error = 2;
+}
+
+
+//search compartment
 message SearchCompartmentRequest{
     string trainid = 1;
 }

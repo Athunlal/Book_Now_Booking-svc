@@ -6,15 +6,39 @@ import (
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowBooking-svc/pkg/repository/interface"
 	usecase "github.com/athunlal/bookNowBooking-svc/pkg/usecase/interface"
+	"github.com/athunlal/bookNowBooking-svc/pkg/utils"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BookingUseCase struct {
 	Repo interfaces.BookingRepo
 }
 
+// SeatBooking implements interfaces.BookingUseCase.
+func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.BookingData) (domain.BookingResponse, error) {
+	TrainId, err := primitive.ObjectIDFromHex(bookingData.TrainId)
+	trainData, err := use.Repo.FindTrainById(ctx, TrainId)
+	if err != nil {
+		return domain.BookingResponse{}, err
+	}
+
+	Compartmentid, err := primitive.ObjectIDFromHex(bookingData.CompartmentId)
+	seatDetail, err := use.Repo.GetSeatDetails(ctx, Compartmentid)
+	if err != nil {
+		return domain.BookingResponse{}, err
+	}
+
+	seatNumber, err := utils.CheckSeatAvailable(seatDetail)
+	if err != nil {
+		return domain.BookingResponse{}, err
+	}
+
+	return domain.BookingResponse{}, nil
+}
+
 // Booking implements interfaces.BookingUseCase.
-func (use *BookingUseCase) Booking(ctx context.Context, trainid domain.Train) (domain.BookingResponse, error) {
-	trainData, err := use.Repo.FindTrianById(ctx, trainid)
+func (use *BookingUseCase) SearchCompartment(ctx context.Context, trainid domain.Train) (domain.BookingResponse, error) {
+	trainData, err := use.Repo.FindTrainById(ctx, trainid.TrainId)
 	if err != nil {
 		return domain.BookingResponse{}, err
 	}

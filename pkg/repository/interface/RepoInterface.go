@@ -11,7 +11,7 @@ type BookingRepo interface {
 	FindbyTrainName(ctx context.Context, train domain.Train) (domain.Train, error)
 	FindByTrainNumber(tx context.Context, train domain.Train) (domain.Train, error)
 	FindTrainByRoutid(ctx context.Context, train domain.Train) (domain.SearchingTrainResponseData, error)
-	FindTrianById(ctx context.Context, train domain.Train) (domain.Train, error)
+	FindTrainById(ctx context.Context, train_id primitive.ObjectID) (domain.Train, error)
 
 	FindByStationName(ctx context.Context, station domain.Station) (domain.Station, error)
 	FindroutebyName(ctx context.Context, route domain.Route) (domain.Route, error)

@@ -25,11 +25,11 @@ func (db *TrainDataBase) GetSeatDetails(ctx context.Context, seatId primitive.Ob
 }
 
 // FindTrianById implements interfaces.BookingRepo.
-func (db *TrainDataBase) FindTrianById(ctx context.Context, train domain.Train) (domain.Train, error) {
+func (db *TrainDataBase) FindTrainById(ctx context.Context, train_id primitive.ObjectID) (domain.Train, error) {
 	collectionRoute := db.DB.Collection("train")
 	var trainData domain.Train
 
-	filter := bson.M{"_id": train.TrainId}
+	filter := bson.M{"_id": train_id}
 
 	err := collectionRoute.FindOne(ctx, filter).Decode(&trainData)
 	if err != nil {

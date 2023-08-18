@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
@@ -59,21 +60,11 @@ func ConvertToPrimitiveTimestamp(pbTimestamp *timestamppb.Timestamp) primitive.T
 	return primitive.Timestamp{T: uint32(seconds), I: uint32(nanos)}
 }
 
-// func TimeCalculation(routData domain.SearchingTrainResponseData, sStation, dStation primitive.ObjectID) (string, string) {
-// 	var startingDistance float32
-// 	var endingDistance float32
-// 	for i, ch := range routData.Stationid {
-// 		if ch == sStation {
-// 			startingDistance = routData.Distance[i]
-// 			for j := i; j < len(routData.Stationid); j++ {
-// 				if routData.Stationid[j] == dStation {
-// 					endingDistance = routData.Distance[j]
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	// distaceBetweenTwoStation := endingDistance - startingDistance
-
-// 	return "", ""
-// }
+func CheckSeatAvailable(seatData domain.Compartment2) (int, error) {
+	for _, ch := range seatData.SeatDetails {
+		if ch.IsReserved {
+			return ch.SeatNumber, nil
+		}
+	}
+	return 0, fmt.Errorf("No seat availble")
+}

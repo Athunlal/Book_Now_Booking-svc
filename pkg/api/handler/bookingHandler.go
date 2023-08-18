@@ -23,6 +23,14 @@ func NewBookingHandler(usecase interfaces.BookingUseCase) *BookingHandler {
 	}
 }
 
+func (h *BookingHandler) BookTicket(ctx context.Context, req *pb.BookTiketRequest) (*pb.BookTiketResponse, error) {
+	_, err := h.useCasse.SeatBooking(ctx, domain.BookingData{
+		CompartmentId: req.Compartmentid,
+		TrainId:       req.TrainId,
+	})
+	return &pb.BookTiketResponse{}, err
+}
+
 func (h *BookingHandler) SearchCompartment(ctx context.Context, req *pb.SearchCompartmentRequest) (*pb.SearchCompartmentResponse, error) {
 	trainID, err := primitive.ObjectIDFromHex(req.Trainid)
 	if err != nil {
@@ -30,7 +38,7 @@ func (h *BookingHandler) SearchCompartment(ctx context.Context, req *pb.SearchCo
 	}
 
 	bookingData := domain.Train{TrainId: trainID}
-	res, err := h.useCasse.Booking(ctx, bookingData)
+	res, err := h.useCasse.SearchCompartment(ctx, bookingData)
 	if err != nil {
 		return nil, err
 	}
