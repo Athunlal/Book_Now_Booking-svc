@@ -132,4 +132,5 @@ type RouteResponse struct {
 type BookingData struct {
 	TrainId       string `json:"trainid,omitempty" bson:"trainid,omitempty"`
 	CompartmentId string `json:"compartmentid,omitempty" bson:"compartmentid,omitempty"`
+	Userid        int64  `json:"userid,omitempty" bson:"userid,omitempty"`
 }

@@ -13,6 +13,7 @@ type Config struct {
 	DBHost     string `mapstructure:"DBHOST"`
 	DBName     string `mapstructure:"DBNAME"`
 	DBPassword string `mapstructure:"DBPASSWORD"`
+	Usersvcurl string `mapstructure:"USERSVCURL"`
 }
 
 var envs = []string{

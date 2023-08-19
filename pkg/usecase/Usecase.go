@@ -2,20 +2,25 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowBooking-svc/pkg/repository/interface"
 	usecase "github.com/athunlal/bookNowBooking-svc/pkg/usecase/interface"
+	"github.com/athunlal/bookNowBooking-svc/pkg/usermodule"
+	"github.com/athunlal/bookNowBooking-svc/pkg/usermodule/pb"
 	"github.com/athunlal/bookNowBooking-svc/pkg/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BookingUseCase struct {
-	Repo interfaces.BookingRepo
+	Repo   interfaces.BookingRepo
+	Client pb.ProfileManagementClient
 }
 
 // SeatBooking implements interfaces.BookingUseCase.
 func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.BookingData) (domain.BookingResponse, error) {
+
 	TrainId, err := primitive.ObjectIDFromHex(bookingData.TrainId)
 	trainData, err := use.Repo.FindTrainById(ctx, TrainId)
 	if err != nil {
@@ -33,6 +38,18 @@ func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.B
 		return domain.BookingResponse{}, err
 	}
 
+	userData, err := usermodule.GetUserData(use.Client, bookingData.Userid)
+	if err != nil {
+		return domain.BookingResponse{}, err
+	}
+
+	if err != nil {
+		return domain.BookingResponse{}, err
+	}
+
+	fmt.Println("this is the train id :", trainData.TrainId)
+	fmt.Println("this is the seat number :", seatNumber)
+	fmt.Println("thi is  the user name :", userData.Username)
 	return domain.BookingResponse{}, nil
 }
 
@@ -90,8 +107,9 @@ func (use *BookingUseCase) ViewTrain(ctx context.Context) (*domain.SearchingTrai
 	return res, err
 }
 
-func NewBookingUseCase(repo interfaces.BookingRepo) usecase.BookingUseCase {
+func NewBookingUseCase(repo interfaces.BookingRepo, client pb.ProfileManagementClient) usecase.BookingUseCase {
 	return &BookingUseCase{
-		Repo: repo,
+		Repo:   repo,
+		Client: client,
 	}
 }

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package profile;
+
+option go_package = "./pkg/usermodule/pb";
+
+service ProfileManagement{
+    rpc GetUserData(UserDataRequest)returns(UserDataResponse){}
+}
+//To get User data 
+message UserDataRequest{
+    int64 userid = 1;
+}
+message UserDataResponse{
+    string username = 1;
+}
+
+  
+
+
+// export PATH="$PATH:$(go env GOPATH)/bin"
+// protoc --go_out=. --go-grpc_out=. pkg/pb/user.proto

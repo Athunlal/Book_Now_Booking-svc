@@ -14,6 +14,7 @@ service BookingManagement {
 message BookTiketRequest{
     string compartmentid = 1;
     string trainId = 2;
+    int64 userid = 3;
 }
 message BookTiketResponse{
     int64 status = 1;

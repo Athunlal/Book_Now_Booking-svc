@@ -13,6 +13,7 @@ import (
 	"github.com/athunlal/bookNowBooking-svc/pkg/db"
 	"github.com/athunlal/bookNowBooking-svc/pkg/repository"
 	"github.com/athunlal/bookNowBooking-svc/pkg/usecase"
+	"github.com/athunlal/bookNowBooking-svc/pkg/usermodule"
 )
 
 // Injectors from wire.go:
@@ -22,8 +23,9 @@ func InitApi(cfg config.Config) (*api.ServerHttp, error) {
 	if err != nil {
 		return nil, err
 	}
+	client := usermodule.UserModule(&cfg)
 	bookingRepo := repository.NewTrainRepo(database)
-	bookingUseCase := usecase.NewBookingUseCase(bookingRepo)
+	bookingUseCase := usecase.NewBookingUseCase(bookingRepo,client)
 	bookingHandler := handler.NewBookingHandler(bookingUseCase)
 	serverHttp := api.NewServerHttp(bookingHandler)
 	return serverHttp, nil

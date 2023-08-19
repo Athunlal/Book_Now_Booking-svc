@@ -24,11 +24,16 @@ func NewBookingHandler(usecase interfaces.BookingUseCase) *BookingHandler {
 }
 
 func (h *BookingHandler) BookTicket(ctx context.Context, req *pb.BookTiketRequest) (*pb.BookTiketResponse, error) {
+
 	_, err := h.useCasse.SeatBooking(ctx, domain.BookingData{
 		CompartmentId: req.Compartmentid,
 		TrainId:       req.TrainId,
+		Userid:        req.Userid,
 	})
-	return &pb.BookTiketResponse{}, err
+
+	return &pb.BookTiketResponse{
+		Status: http.StatusOK,
+	}, err
 }
 
 func (h *BookingHandler) SearchCompartment(ctx context.Context, req *pb.SearchCompartmentRequest) (*pb.SearchCompartmentResponse, error) {
