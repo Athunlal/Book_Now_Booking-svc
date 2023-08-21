@@ -43,10 +43,6 @@ func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.B
 		return domain.BookingResponse{}, err
 	}
 
-	if err != nil {
-		return domain.BookingResponse{}, err
-	}
-
 	fmt.Println("this is the train id :", trainData.TrainId)
 	fmt.Println("this is the seat number :", seatNumber)
 	fmt.Println("thi is  the user name :", userData.Username)
