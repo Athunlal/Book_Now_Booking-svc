@@ -23,4 +23,7 @@ type BookingRepo interface {
 
 	ViewTrain(ctx context.Context) (*domain.SearchingTrainResponseData, error)
 	FindSeatbyCompartment(ctx context.Context, seat domain.Seats) (error, domain.Seats)
+
+	CreateWallet(ctx context.Context, userid int64) error
+	AddAmount(ctx context.Context, amount domain.UserWallet) error
 }

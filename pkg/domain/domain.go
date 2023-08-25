@@ -134,3 +134,48 @@ type BookingData struct {
 	CompartmentId string `json:"compartmentid,omitempty" bson:"compartmentid,omitempty"`
 	Userid        int64  `json:"userid,omitempty" bson:"userid,omitempty"`
 }
+type CheckoutDetails struct {
+	TrainName          string
+	TrainNumber        int64
+	SourceStation      string
+	DestinationStation string
+	Username           string
+	Traveler           []Traveler
+}
+type Traveler struct {
+	TravelersName string
+}
+
+type Travelers struct {
+	Travelername string `json:"travelername"`
+}
+
+type Payment struct {
+	TicketId    primitive.ObjectID `json:"ticketid,omitempty" bson:"ticketid,omitempty"`
+	Paymentid   primitive.ObjectID `json:"paymentid,omitempty" bson:"paymentid,omitempty"`
+	Trainname   string             `json:"trainname,omitempty" bson:"price,omitempty"`
+	TrainNumber int64              `json:"trainnumber"`
+	UserName    string             `json:"username"`
+	Travelers   []Travelers        `json:"travelers"`
+}
+
+type Ticket struct {
+	TicketId             primitive.ObjectID
+	Trainname            string
+	Trainnumber          int64
+	Sourcestationid      primitive.ObjectID
+	DestinationStationid primitive.ObjectID
+	PNRnumber            int64
+	Username             string
+	Classname            string
+	Travelers            []Travelers `json:"travelers"`
+}
+
+type UserWallet struct {
+	ID            primitive.ObjectID `bson:"_id,omitempty"`
+	Userid        int64              `bson:"userid,omitempty"`
+	Username      string             `bson:"username"`
+	Email         string             `bson:"email"`
+	Amount        float64            `bson:"amount"`
+	WalletBalance float64            `bson:"walletBalance"`
+}

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
@@ -13,6 +14,39 @@ import (
 
 type TrainDataBase struct {
 	DB *mongo.Database
+}
+
+// CreateWallet implements interfaces.BookingRepo.
+func (db *TrainDataBase) CreateWallet(ctx context.Context, userid int64) error {
+	collection := db.DB.Collection("wallet")
+
+	walletDocument := bson.M{
+		"user_id":       userid,
+		"walletBalance": 0.0,
+	}
+	_, err := collection.InsertOne(ctx, walletDocument)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// AddAmount implements interfaces.BookingRepo.
+func (db *TrainDataBase) AddAmount(ctx context.Context, amount domain.UserWallet) error {
+	collection := db.DB.Collection("wallet")
+	filter := bson.M{"userid": amount.Userid} // Use Userid for filtering
+	update := bson.M{"$inc": bson.M{"walletBalance": amount.Amount}}
+
+	result, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return fmt.Errorf("failed to update document: %v", err)
+	}
+
+	if result.ModifiedCount == 0 {
+		return fmt.Errorf("no document was updated")
+	}
+
+	return nil
 }
 
 // GetSeatDetails retrieves seat details based on seat ID

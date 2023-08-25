@@ -7,18 +7,63 @@ option go_package = "./pkg/pb";
 service BookingManagement {
     rpc SearchTrain(SearchTrainRequest) returns (SearchTrainResponse) {} 
     rpc SearchCompartment(SearchCompartmentRequest)returns(SearchCompartmentResponse){}
-    rpc BookTicket(BookTiketRequest)returns(BookTiketResponse){}
+    rpc Checkout(CheckoutRequest)returns(CheckoutResponse){}
+    rpc Payment(PaymentRequest)returns(PaymentResponse){}
+    rpc AddWallet(AddWalletRequest)returns(AddWalletResponse){}
+    rpc CreateWallet(CreateWalletRequest)returns(CreateWalletResponse){}
 }
 
+//Create wallet
+message CreateWalletRequest{
+    int64 userid = 1;
+}
+message CreateWalletResponse{
+    int64 status = 1;
+    string error = 2;
+}
+
+//Add wallet amoumt
+message AddWalletRequest{
+    string username = 1;
+    float amount = 2; 
+    int64 userid = 3;
+}
+message AddWalletResponse{
+    int64 status = 1;
+    string error = 2;
+}
+
+//Payment Razorpay
+message PaymentRequest{
+    string trainname = 1; 
+    int64 trainnumber = 2;
+    int64 userid  = 3;
+    repeated Travelers travelers = 4;
+}
+message PaymentResponse{
+    int64 status = 1;
+    string error = 2;
+    string ticketid = 3;
+}
 //Ticket booking 
-message BookTiketRequest{
+message CheckoutRequest{
     string compartmentid = 1;
     string trainId = 2;
     int64 userid = 3;
 }
-message BookTiketResponse{
+message CheckoutResponse{
     int64 status = 1;
     string error = 2;
+    string trainName = 3;
+    int64 trainnumber =4;
+    string soureceStation=5;
+    string destinationStation=6;
+    string username =7;
+    repeated Travelers Travelers=8;
+}
+
+message Travelers{
+    string Travelername =1;
 }
 
 

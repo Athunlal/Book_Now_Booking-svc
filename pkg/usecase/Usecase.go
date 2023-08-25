@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowBooking-svc/pkg/repository/interface"
@@ -18,35 +17,60 @@ type BookingUseCase struct {
 	Client pb.ProfileManagementClient
 }
 
+// CreateWallet implements interfaces.BookingUseCase.
+func (use *BookingUseCase) CreateWallet(ctx context.Context, wallet int64) error {
+	err := use.Repo.CreateWallet(ctx, wallet)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// AddAmount implements interfaces.BookingUseCase.
+func (use *BookingUseCase) AddAmount(ctx context.Context, wallet domain.UserWallet) error {
+	err := use.Repo.AddAmount(ctx, wallet)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Payment implements interfaces.BookingUseCase.
+func (use *BookingUseCase) Payment(ctx context.Context, paymentData domain.Payment) (domain.Payment, error) {
+	return domain.Payment{}, nil
+}
+
 // SeatBooking implements interfaces.BookingUseCase.
-func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.BookingData) (domain.BookingResponse, error) {
+func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.BookingData) (domain.CheckoutDetails, error) {
 
 	TrainId, err := primitive.ObjectIDFromHex(bookingData.TrainId)
 	trainData, err := use.Repo.FindTrainById(ctx, TrainId)
 	if err != nil {
-		return domain.BookingResponse{}, err
+		return domain.CheckoutDetails{}, err
 	}
 
 	Compartmentid, err := primitive.ObjectIDFromHex(bookingData.CompartmentId)
 	seatDetail, err := use.Repo.GetSeatDetails(ctx, Compartmentid)
 	if err != nil {
-		return domain.BookingResponse{}, err
+		return domain.CheckoutDetails{}, err
 	}
 
-	seatNumber, err := utils.CheckSeatAvailable(seatDetail)
+	_, err = utils.CheckSeatAvailable(seatDetail)
 	if err != nil {
-		return domain.BookingResponse{}, err
+		return domain.CheckoutDetails{}, err
 	}
 
 	userData, err := usermodule.GetUserData(use.Client, bookingData.Userid)
 	if err != nil {
-		return domain.BookingResponse{}, err
+		return domain.CheckoutDetails{}, err
 	}
 
-	fmt.Println("this is the train id :", trainData.TrainId)
-	fmt.Println("this is the seat number :", seatNumber)
-	fmt.Println("thi is  the user name :", userData.Username)
-	return domain.BookingResponse{}, nil
+	return domain.CheckoutDetails{
+		TrainName:   trainData.TrainName,
+		TrainNumber: int64(trainData.TrainNumber),
+		Username:    userData.Username,
+		Traveler:    []domain.Traveler{},
+	}, nil
 }
 
 // Booking implements interfaces.BookingUseCase.

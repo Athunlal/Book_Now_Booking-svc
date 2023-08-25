@@ -23,16 +23,54 @@ func NewBookingHandler(usecase interfaces.BookingUseCase) *BookingHandler {
 	}
 }
 
-func (h *BookingHandler) BookTicket(ctx context.Context, req *pb.BookTiketRequest) (*pb.BookTiketResponse, error) {
+func (h *BookingHandler) CreateWallet(ctx context.Context, req *pb.CreateWalletRequest) (*pb.CreateWalletResponse, error) {
+	wallet := req.Userid
+	err := h.useCasse.CreateWallet(ctx, wallet)
+	if err != nil {
+		return nil, err
+	}
+	// Construct and return a response
+	response := &pb.CreateWalletResponse{
+		Status: http.StatusOK,
+	}
+	return response, nil
+}
 
-	_, err := h.useCasse.SeatBooking(ctx, domain.BookingData{
+func (h *BookingHandler) AddWallet(ctx context.Context, req *pb.AddWalletRequest) (*pb.AddWalletResponse, error) {
+	walletData := domain.UserWallet{
+		Username: req.Username,
+		Amount:   float64(req.Amount),
+		Userid:   req.Userid,
+	}
+	err := h.useCasse.AddAmount(ctx, walletData)
+	if err != nil {
+		return nil, err
+	}
+	// Construct and return a response
+	response := &pb.AddWalletResponse{
+		Status: http.StatusOK,
+	}
+	return response, nil
+}
+
+func (h *BookingHandler) Payment(ctx context.Context, req *pb.PaymentRequest) (*pb.PaymentResponse, error) {
+
+	return &pb.PaymentResponse{}, nil
+}
+
+func (h *BookingHandler) Checkout(ctx context.Context, req *pb.CheckoutRequest) (*pb.CheckoutResponse, error) {
+
+	res, err := h.useCasse.SeatBooking(ctx, domain.BookingData{
 		CompartmentId: req.Compartmentid,
 		TrainId:       req.TrainId,
 		Userid:        req.Userid,
 	})
 
-	return &pb.BookTiketResponse{
-		Status: http.StatusOK,
+	return &pb.CheckoutResponse{
+		Status:      http.StatusOK,
+		TrainName:   res.TrainName,
+		Trainnumber: res.TrainNumber,
+		Username:    res.Username,
 	}, err
 }
 
