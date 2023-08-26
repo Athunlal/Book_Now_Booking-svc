@@ -17,12 +17,12 @@ type TrainDataBase struct {
 }
 
 // CreateWallet implements interfaces.BookingRepo.
-func (db *TrainDataBase) CreateWallet(ctx context.Context, userid int64) error {
+func (db *TrainDataBase) CreateWallet(ctx context.Context, wallet domain.UserWallet) error {
 	collection := db.DB.Collection("wallet")
 
 	walletDocument := bson.M{
-		"user_id":       userid,
-		"walletBalance": 0.0,
+		"user_id":       wallet.Userid,
+		"walletBalance": wallet.WalletBalance,
 	}
 	_, err := collection.InsertOne(ctx, walletDocument)
 	if err != nil {

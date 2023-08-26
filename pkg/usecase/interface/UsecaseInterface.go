@@ -14,5 +14,5 @@ type BookingUseCase interface {
 	Payment(ctx context.Context, paymentData domain.Payment) (domain.Payment, error)
 	AddAmount(ctx context.Context, wallet domain.UserWallet) error
 
-	CreateWallet(ctx context.Context, wallet int64) error
+	CreateWallet(ctx context.Context, wallet domain.UserWallet) error
 }

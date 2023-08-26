@@ -16,6 +16,7 @@ service BookingManagement {
 //Create wallet
 message CreateWalletRequest{
     int64 userid = 1;
+    float walletBalance =2;
 }
 message CreateWalletResponse{
     int64 status = 1;

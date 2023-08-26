@@ -24,30 +24,16 @@ func NewBookingHandler(usecase interfaces.BookingUseCase) *BookingHandler {
 }
 
 func (h *BookingHandler) CreateWallet(ctx context.Context, req *pb.CreateWalletRequest) (*pb.CreateWalletResponse, error) {
-	wallet := req.Userid
+	wallet := domain.UserWallet{
+		Userid:        req.Userid,
+		WalletBalance: float64(req.WalletBalance),
+	}
 	err := h.useCasse.CreateWallet(ctx, wallet)
 	if err != nil {
 		return nil, err
 	}
 	// Construct and return a response
 	response := &pb.CreateWalletResponse{
-		Status: http.StatusOK,
-	}
-	return response, nil
-}
-
-func (h *BookingHandler) AddWallet(ctx context.Context, req *pb.AddWalletRequest) (*pb.AddWalletResponse, error) {
-	walletData := domain.UserWallet{
-		Username: req.Username,
-		Amount:   float64(req.Amount),
-		Userid:   req.Userid,
-	}
-	err := h.useCasse.AddAmount(ctx, walletData)
-	if err != nil {
-		return nil, err
-	}
-	// Construct and return a response
-	response := &pb.AddWalletResponse{
 		Status: http.StatusOK,
 	}
 	return response, nil

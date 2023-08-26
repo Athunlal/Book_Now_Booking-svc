@@ -18,7 +18,7 @@ type BookingUseCase struct {
 }
 
 // CreateWallet implements interfaces.BookingUseCase.
-func (use *BookingUseCase) CreateWallet(ctx context.Context, wallet int64) error {
+func (use *BookingUseCase) CreateWallet(ctx context.Context, wallet domain.UserWallet) error {
 	err := use.Repo.CreateWallet(ctx, wallet)
 	if err != nil {
 		return err
