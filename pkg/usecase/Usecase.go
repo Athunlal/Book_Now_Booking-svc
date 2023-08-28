@@ -17,6 +17,21 @@ type BookingUseCase struct {
 	Client pb.ProfileManagementClient
 }
 
+// UpdateAmount implements interfaces.BookingUseCase.
+func (use *BookingUseCase) UpdateAmount(ctx context.Context, wallet domain.UserWallet) error {
+	res, err := use.Repo.FetchWalletDatabyUserid(ctx, wallet)
+	if err != nil {
+		return err
+	}
+	totalAmount := res.WalletBalance + wallet.WalletBalance
+	updateWallet := domain.UserWallet{
+		Userid:        wallet.Userid,
+		WalletBalance: totalAmount,
+	}
+	err = use.Repo.UpdateAmount(ctx, updateWallet)
+	return err
+}
+
 // CreateWallet implements interfaces.BookingUseCase.
 func (use *BookingUseCase) CreateWallet(ctx context.Context, wallet domain.UserWallet) error {
 	err := use.Repo.CreateWallet(ctx, wallet)
@@ -26,41 +41,87 @@ func (use *BookingUseCase) CreateWallet(ctx context.Context, wallet domain.UserW
 	return nil
 }
 
-// AddAmount implements interfaces.BookingUseCase.
-func (use *BookingUseCase) AddAmount(ctx context.Context, wallet domain.UserWallet) error {
-	err := use.Repo.AddAmount(ctx, wallet)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // Payment implements interfaces.BookingUseCase.
-func (use *BookingUseCase) Payment(ctx context.Context, paymentData domain.Payment) (domain.Payment, error) {
-	return domain.Payment{}, nil
+func (use *BookingUseCase) Payment(ctx context.Context, paymentData domain.Payment) (*domain.Payment, error) {
+	wallet, err := use.Repo.FetchWalletDatabyUserid(ctx, domain.UserWallet{
+		Userid: paymentData.Userid,
+	})
+	if err != nil {
+		return nil, err
+	}
+	ticket, err := use.Repo.GetTicketByPNR(ctx, paymentData.PNRnumber)
+
+	if err := utils.PaymentCalculation(*wallet, ticket); err != nil {
+		return nil, err
+	}
+
+	for _, ch := range ticket.SeatNumbers {
+		err := use.Repo.UpdateCompartment(ctx, ch, ticket.CompartmentId)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &domain.Payment{
+		TicketId: ticket.TicketId,
+	}, nil
 }
 
 // SeatBooking implements interfaces.BookingUseCase.
 func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.BookingData) (domain.CheckoutDetails, error) {
 
+	//fetching train data
 	TrainId, err := primitive.ObjectIDFromHex(bookingData.TrainId)
 	trainData, err := use.Repo.FindTrainById(ctx, TrainId)
 	if err != nil {
 		return domain.CheckoutDetails{}, err
 	}
 
+	//fetching compartment data
 	Compartmentid, err := primitive.ObjectIDFromHex(bookingData.CompartmentId)
 	seatDetail, err := use.Repo.GetSeatDetails(ctx, Compartmentid)
 	if err != nil {
 		return domain.CheckoutDetails{}, err
 	}
 
-	_, err = utils.CheckSeatAvailable(seatDetail)
+	price := utils.PriceCalculation(seatDetail, len(bookingData.Travelers))
+	//check seat availability
+	seatNumber, err := utils.CheckSeatAvailable(len(bookingData.Travelers), seatDetail)
+
+	//fetch user data
+	userData, err := usermodule.GetUserData(use.Client, bookingData.Userid)
 	if err != nil {
 		return domain.CheckoutDetails{}, err
 	}
 
-	userData, err := usermodule.GetUserData(use.Client, bookingData.Userid)
+	travelers := []domain.Travelers{}
+	for _, ch := range bookingData.Travelers {
+		travler := domain.Travelers{
+			Travelername: ch.Travelername,
+		}
+		travelers = append(travelers, travler)
+	}
+
+	pnr := utils.GeneratePNR()
+
+	ticket := domain.Ticket{
+		TicketId:             trainData.TrainId,
+		Trainname:            trainData.TrainName,
+		Trainnumber:          int64(trainData.TrainNumber),
+		Sourcestationid:      bookingData.SourceStationid,
+		DestinationStationid: bookingData.DestinationStationid,
+		PNRnumber:            pnr,
+		Username:             userData.Username,
+		Classname:            seatDetail.TypeOfSeat,
+		SeatNumbers:          seatNumber,
+		TotalAmount:          price,
+		CompartmentId:        Compartmentid,
+		Travelers:            travelers,
+		IsValide:             true,
+	}
+
+	err = use.Repo.CreatTicket(ctx, ticket)
+
 	if err != nil {
 		return domain.CheckoutDetails{}, err
 	}
@@ -69,7 +130,9 @@ func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.B
 		TrainName:   trainData.TrainName,
 		TrainNumber: int64(trainData.TrainNumber),
 		Username:    userData.Username,
-		Traveler:    []domain.Traveler{},
+		Amount:      price,
+		Traveler:    travelers,
+		PnrNumber:   pnr,
 	}, nil
 }
 

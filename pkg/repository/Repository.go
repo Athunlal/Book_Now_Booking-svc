@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
@@ -14,6 +13,67 @@ import (
 
 type TrainDataBase struct {
 	DB *mongo.Database
+}
+
+// GetTicketByPNR implements interfaces.BookingRepo.
+func (db *TrainDataBase) GetTicketByPNR(ctx context.Context, PNR int64) (domain.Ticket, error) {
+	collectionRoute := db.DB.Collection("tickets")
+	var ticket domain.Ticket
+
+	filter := bson.M{"pnrnumber": PNR}
+
+	err := collectionRoute.FindOne(ctx, filter).Decode(&ticket)
+	if err != nil {
+		return domain.Ticket{}, err
+	}
+	return ticket, nil
+}
+
+// UpdateCompartment implements interfaces.BookingRepo.
+func (db *TrainDataBase) UpdateCompartment(ctx context.Context, seatNumber int64, compartmentID primitive.ObjectID) error {
+	collection := db.DB.Collection("seat")
+	filter := bson.M{"_id": compartmentID, "seatDetails.seatnumber": seatNumber}
+	update := bson.M{"$set": bson.M{"seatDetails.$.isreserved": false}}
+
+	_, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// CreatTicket implements interfaces.BookingRepo.
+func (db *TrainDataBase) CreatTicket(ctx context.Context, ticketData domain.Ticket) error {
+	collection := db.DB.Collection("tickets")
+	_, err := collection.InsertOne(ctx, ticketData)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// FetchWalletDatabyUserid implements interfaces.BookingRepo.
+func (db *TrainDataBase) FetchWalletDatabyUserid(ctx context.Context, wallet domain.UserWallet) (*domain.UserWallet, error) {
+	collection := db.DB.Collection("wallet")
+	filter := bson.M{"user_id": wallet.Userid}
+
+	err := collection.FindOne(ctx, filter).Decode(&wallet)
+	if err != nil {
+		return nil, err
+	}
+	return &wallet, nil
+}
+
+// Update implements interfaces.BookingRepo.
+func (db *TrainDataBase) UpdateAmount(ctx context.Context, wallet domain.UserWallet) error {
+	collection := db.DB.Collection("wallet")
+	filter := bson.M{"user_id": wallet.Userid}
+	update := bson.M{"$set": bson.M{"walletBalance": wallet.WalletBalance}}
+	_, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // CreateWallet implements interfaces.BookingRepo.
@@ -28,24 +88,6 @@ func (db *TrainDataBase) CreateWallet(ctx context.Context, wallet domain.UserWal
 	if err != nil {
 		return err
 	}
-	return nil
-}
-
-// AddAmount implements interfaces.BookingRepo.
-func (db *TrainDataBase) AddAmount(ctx context.Context, amount domain.UserWallet) error {
-	collection := db.DB.Collection("wallet")
-	filter := bson.M{"userid": amount.Userid} // Use Userid for filtering
-	update := bson.M{"$inc": bson.M{"walletBalance": amount.Amount}}
-
-	result, err := collection.UpdateOne(ctx, filter, update)
-	if err != nil {
-		return fmt.Errorf("failed to update document: %v", err)
-	}
-
-	if result.ModifiedCount == 0 {
-		return fmt.Errorf("no document was updated")
-	}
-
 	return nil
 }
 

@@ -130,9 +130,12 @@ type RouteResponse struct {
 	RouteResult []RouteResult
 }
 type BookingData struct {
-	TrainId       string `json:"trainid,omitempty" bson:"trainid,omitempty"`
-	CompartmentId string `json:"compartmentid,omitempty" bson:"compartmentid,omitempty"`
-	Userid        int64  `json:"userid,omitempty" bson:"userid,omitempty"`
+	TrainId              string      `json:"trainid,omitempty" bson:"trainid,omitempty"`
+	CompartmentId        string      `json:"compartmentid,omitempty" bson:"compartmentid,omitempty"`
+	Userid               int64       `json:"userid,omitempty" bson:"userid,omitempty"`
+	Travelers            []Travelers `json:"travelers"`
+	SourceStationid      primitive.ObjectID
+	DestinationStationid primitive.ObjectID
 }
 type CheckoutDetails struct {
 	TrainName          string
@@ -140,35 +143,43 @@ type CheckoutDetails struct {
 	SourceStation      string
 	DestinationStation string
 	Username           string
-	Traveler           []Traveler
-}
-type Traveler struct {
-	TravelersName string
+	Amount             float64
+	PnrNumber          int64
+	Traveler           []Travelers
 }
 
 type Travelers struct {
-	Travelername string `json:"travelername"`
+	Travelername string `json:"travelername" bson:"travelername"`
 }
 
 type Payment struct {
-	TicketId    primitive.ObjectID `json:"ticketid,omitempty" bson:"ticketid,omitempty"`
-	Paymentid   primitive.ObjectID `json:"paymentid,omitempty" bson:"paymentid,omitempty"`
-	Trainname   string             `json:"trainname,omitempty" bson:"price,omitempty"`
-	TrainNumber int64              `json:"trainnumber"`
-	UserName    string             `json:"username"`
-	Travelers   []Travelers        `json:"travelers"`
+	TicketId             primitive.ObjectID `json:"ticketid,omitempty" bson:"ticketid,omitempty"`
+	Paymentid            primitive.ObjectID `json:"paymentid,omitempty" bson:"paymentid,omitempty"`
+	Trainname            string             `json:"trainname,omitempty" bson:"price,omitempty"`
+	Sourcestationid      primitive.ObjectID `bson:"sourcestationid"`
+	DestinationStationid primitive.ObjectID `bson:"destinationstationid"`
+	TrainNumber          int64              `json:"trainnumber"`
+	UserName             string             `json:"username"`
+	Userid               int64
+	PNRnumber            int64
+	Travelers            []Travelers `json:"travelers"`
 }
 
 type Ticket struct {
-	TicketId             primitive.ObjectID
-	Trainname            string
-	Trainnumber          int64
-	Sourcestationid      primitive.ObjectID
-	DestinationStationid primitive.ObjectID
-	PNRnumber            int64
-	Username             string
-	Classname            string
-	Travelers            []Travelers `json:"travelers"`
+	TicketId             primitive.ObjectID `bson:"train_id,omitempty"`
+	Trainname            string             `bson:"trainname"`
+	Trainnumber          int64              `bson:"trainnumber"`
+	Sourcestationid      primitive.ObjectID `bson:"sourcestationid"`
+	DestinationStationid primitive.ObjectID `bson:"destinationstationid"`
+	PNRnumber            int64              `bson:"pnrnumber"`
+	Userid               int64              `bson:"userid"`
+	Username             string             `bson:"username"`
+	Classname            string             `bson:"classname"`
+	CompartmentId        primitive.ObjectID `bson:"compartmentid"`
+	TotalAmount          float64            `bson:"amount"`
+	SeatNumbers          []int64            `bson:"seatnumbers"`
+	IsValide             bool
+	Travelers            []Travelers `json:"travelers" bson:"travelers"`
 }
 
 type UserWallet struct {

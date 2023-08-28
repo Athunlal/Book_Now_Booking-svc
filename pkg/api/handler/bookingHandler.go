@@ -23,6 +23,24 @@ func NewBookingHandler(usecase interfaces.BookingUseCase) *BookingHandler {
 	}
 }
 
+func (h *BookingHandler) UpdateAmount(ctx context.Context, req *pb.UpdateAmountRequest) (*pb.UpdateAmountResponse, error) {
+	wallet := domain.UserWallet{
+		Userid:        req.Userid,
+		WalletBalance: float64(req.WalletBalance),
+	}
+
+	err := h.useCasse.UpdateAmount(ctx, wallet)
+	if err != nil {
+		return &pb.UpdateAmountResponse{
+			Status: http.StatusBadRequest,
+			Error:  err.Error(),
+		}, err
+	}
+	return &pb.UpdateAmountResponse{
+		Status: http.StatusOK,
+	}, nil
+}
+
 func (h *BookingHandler) CreateWallet(ctx context.Context, req *pb.CreateWalletRequest) (*pb.CreateWalletResponse, error) {
 	wallet := domain.UserWallet{
 		Userid:        req.Userid,
@@ -41,22 +59,48 @@ func (h *BookingHandler) CreateWallet(ctx context.Context, req *pb.CreateWalletR
 
 func (h *BookingHandler) Payment(ctx context.Context, req *pb.PaymentRequest) (*pb.PaymentResponse, error) {
 
+	h.useCasse.Payment(ctx, domain.Payment{
+		Userid:    req.Userid,
+		PNRnumber: req.PNRnumber,
+	})
 	return &pb.PaymentResponse{}, nil
 }
 
 func (h *BookingHandler) Checkout(ctx context.Context, req *pb.CheckoutRequest) (*pb.CheckoutResponse, error) {
 
+	travelers := []domain.Travelers{}
+	for _, ch := range req.Travelers {
+		traveler := domain.Travelers{
+			Travelername: ch.Travelername,
+		}
+		travelers = append(travelers, traveler)
+	}
+
+	sourceStationid, err := primitive.ObjectIDFromHex(req.Sourcestationid)
+	if err != nil {
+		return nil, err
+	}
+	destinationStationid, err := primitive.ObjectIDFromHex(req.Destinationstationid)
+	if err != nil {
+		return nil, err
+	}
+
 	res, err := h.useCasse.SeatBooking(ctx, domain.BookingData{
-		CompartmentId: req.Compartmentid,
-		TrainId:       req.TrainId,
-		Userid:        req.Userid,
+		CompartmentId:        req.Compartmentid,
+		TrainId:              req.TrainId,
+		Userid:               req.Userid,
+		SourceStationid:      sourceStationid,
+		DestinationStationid: destinationStationid,
+		Travelers:            travelers,
 	})
 
 	return &pb.CheckoutResponse{
-		Status:      http.StatusOK,
 		TrainName:   res.TrainName,
 		Trainnumber: res.TrainNumber,
 		Username:    res.Username,
+		Travelers:   req.Travelers,
+		Amount:      float32(res.Amount),
+		PNRnumber:   res.PnrNumber,
 	}, err
 }
 

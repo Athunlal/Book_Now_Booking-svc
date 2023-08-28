@@ -22,8 +22,8 @@ type BookingManagementClient interface {
 	SearchCompartment(ctx context.Context, in *SearchCompartmentRequest, opts ...grpc.CallOption) (*SearchCompartmentResponse, error)
 	Checkout(ctx context.Context, in *CheckoutRequest, opts ...grpc.CallOption) (*CheckoutResponse, error)
 	Payment(ctx context.Context, in *PaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
-	AddWallet(ctx context.Context, in *AddWalletRequest, opts ...grpc.CallOption) (*AddWalletResponse, error)
 	CreateWallet(ctx context.Context, in *CreateWalletRequest, opts ...grpc.CallOption) (*CreateWalletResponse, error)
+	UpdateAmount(ctx context.Context, in *UpdateAmountRequest, opts ...grpc.CallOption) (*UpdateAmountResponse, error)
 }
 
 type bookingManagementClient struct {
@@ -70,18 +70,18 @@ func (c *bookingManagementClient) Payment(ctx context.Context, in *PaymentReques
 	return out, nil
 }
 
-func (c *bookingManagementClient) AddWallet(ctx context.Context, in *AddWalletRequest, opts ...grpc.CallOption) (*AddWalletResponse, error) {
-	out := new(AddWalletResponse)
-	err := c.cc.Invoke(ctx, "/Booking.BookingManagement/AddWallet", in, out, opts...)
+func (c *bookingManagementClient) CreateWallet(ctx context.Context, in *CreateWalletRequest, opts ...grpc.CallOption) (*CreateWalletResponse, error) {
+	out := new(CreateWalletResponse)
+	err := c.cc.Invoke(ctx, "/Booking.BookingManagement/CreateWallet", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *bookingManagementClient) CreateWallet(ctx context.Context, in *CreateWalletRequest, opts ...grpc.CallOption) (*CreateWalletResponse, error) {
-	out := new(CreateWalletResponse)
-	err := c.cc.Invoke(ctx, "/Booking.BookingManagement/CreateWallet", in, out, opts...)
+func (c *bookingManagementClient) UpdateAmount(ctx context.Context, in *UpdateAmountRequest, opts ...grpc.CallOption) (*UpdateAmountResponse, error) {
+	out := new(UpdateAmountResponse)
+	err := c.cc.Invoke(ctx, "/Booking.BookingManagement/UpdateAmount", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -96,8 +96,8 @@ type BookingManagementServer interface {
 	SearchCompartment(context.Context, *SearchCompartmentRequest) (*SearchCompartmentResponse, error)
 	Checkout(context.Context, *CheckoutRequest) (*CheckoutResponse, error)
 	Payment(context.Context, *PaymentRequest) (*PaymentResponse, error)
-	AddWallet(context.Context, *AddWalletRequest) (*AddWalletResponse, error)
 	CreateWallet(context.Context, *CreateWalletRequest) (*CreateWalletResponse, error)
+	UpdateAmount(context.Context, *UpdateAmountRequest) (*UpdateAmountResponse, error)
 	mustEmbedUnimplementedBookingManagementServer()
 }
 
@@ -117,11 +117,11 @@ func (UnimplementedBookingManagementServer) Checkout(context.Context, *CheckoutR
 func (UnimplementedBookingManagementServer) Payment(context.Context, *PaymentRequest) (*PaymentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Payment not implemented")
 }
-func (UnimplementedBookingManagementServer) AddWallet(context.Context, *AddWalletRequest) (*AddWalletResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddWallet not implemented")
-}
 func (UnimplementedBookingManagementServer) CreateWallet(context.Context, *CreateWalletRequest) (*CreateWalletResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateWallet not implemented")
+}
+func (UnimplementedBookingManagementServer) UpdateAmount(context.Context, *UpdateAmountRequest) (*UpdateAmountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAmount not implemented")
 }
 func (UnimplementedBookingManagementServer) mustEmbedUnimplementedBookingManagementServer() {}
 
@@ -208,24 +208,6 @@ func _BookingManagement_Payment_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BookingManagement_AddWallet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AddWalletRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BookingManagementServer).AddWallet(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/Booking.BookingManagement/AddWallet",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookingManagementServer).AddWallet(ctx, req.(*AddWalletRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _BookingManagement_CreateWallet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateWalletRequest)
 	if err := dec(in); err != nil {
@@ -240,6 +222,24 @@ func _BookingManagement_CreateWallet_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BookingManagementServer).CreateWallet(ctx, req.(*CreateWalletRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BookingManagement_UpdateAmount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAmountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookingManagementServer).UpdateAmount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Booking.BookingManagement/UpdateAmount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookingManagementServer).UpdateAmount(ctx, req.(*UpdateAmountRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -268,12 +268,12 @@ var BookingManagement_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _BookingManagement_Payment_Handler,
 		},
 		{
-			MethodName: "AddWallet",
-			Handler:    _BookingManagement_AddWallet_Handler,
-		},
-		{
 			MethodName: "CreateWallet",
 			Handler:    _BookingManagement_CreateWallet_Handler,
+		},
+		{
+			MethodName: "UpdateAmount",
+			Handler:    _BookingManagement_UpdateAmount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

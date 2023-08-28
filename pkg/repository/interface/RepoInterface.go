@@ -25,5 +25,12 @@ type BookingRepo interface {
 	FindSeatbyCompartment(ctx context.Context, seat domain.Seats) (error, domain.Seats)
 
 	CreateWallet(ctx context.Context, wallet domain.UserWallet) error
-	AddAmount(ctx context.Context, amount domain.UserWallet) error
+	UpdateAmount(ctx context.Context, wallet domain.UserWallet) error
+	FetchWalletDatabyUserid(ctx context.Context, wallet domain.UserWallet) (*domain.UserWallet, error)
+
+	CreatTicket(ctx context.Context, ticketData domain.Ticket) error
+
+	UpdateCompartment(ctx context.Context, seatNumber int64, compartmentID primitive.ObjectID) error
+
+	GetTicketByPNR(ctx context.Context, PNR int64) (domain.Ticket, error)
 }

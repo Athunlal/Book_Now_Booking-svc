@@ -9,8 +9,17 @@ service BookingManagement {
     rpc SearchCompartment(SearchCompartmentRequest)returns(SearchCompartmentResponse){}
     rpc Checkout(CheckoutRequest)returns(CheckoutResponse){}
     rpc Payment(PaymentRequest)returns(PaymentResponse){}
-    rpc AddWallet(AddWalletRequest)returns(AddWalletResponse){}
     rpc CreateWallet(CreateWalletRequest)returns(CreateWalletResponse){}
+    rpc UpdateAmount(UpdateAmountRequest)returns(UpdateAmountResponse){}
+}
+//add Amount
+message UpdateAmountRequest{
+    int64 userid = 1;
+    float walletBalance =2;
+}
+message UpdateAmountResponse{
+    int64 status = 1;
+    string error = 2;
 }
 
 //Create wallet
@@ -23,52 +32,45 @@ message CreateWalletResponse{
     string error = 2;
 }
 
-//Add wallet amoumt
-message AddWalletRequest{
-    string username = 1;
-    float amount = 2; 
-    int64 userid = 3;
-}
-message AddWalletResponse{
-    int64 status = 1;
-    string error = 2;
-}
-
 //Payment Razorpay
 message PaymentRequest{
-    string trainname = 1; 
-    int64 trainnumber = 2;
-    int64 userid  = 3;
-    repeated Travelers travelers = 4;
+   int64 userid =1;
+   int64 PNRnumber =2;
 }
+
 message PaymentResponse{
     int64 status = 1;
     string error = 2;
     string ticketid = 3;
 }
+
 //Ticket booking 
 message CheckoutRequest{
     string compartmentid = 1;
     string trainId = 2;
-    int64 userid = 3;
+    string sourcestationid=3;
+    string destinationstationid=4;
+    int64 userid = 5;
+     repeated Travelers travelers = 6;
 }
 message CheckoutResponse{
-    int64 status = 1;
-    string error = 2;
-    string trainName = 3;
-    int64 trainnumber =4;
-    string soureceStation=5;
-    string destinationStation=6;
-    string username =7;
-    repeated Travelers Travelers=8;
+    string error = 1;
+    string trainName = 2;
+    int64 trainnumber =3;
+    string soureceStation=4;
+    string destinationStation=5;
+    string username =6;
+    repeated Travelers Travelers=7;
+    float amount = 8;
+    int64 PNRnumber = 9;
+
 }
 
 message Travelers{
     string Travelername =1;
 }
 
-
-//search compartment
+//Booking
 message SearchCompartmentRequest{
     string trainid = 1;
 }

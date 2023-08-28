@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
@@ -60,11 +61,31 @@ func ConvertToPrimitiveTimestamp(pbTimestamp *timestamppb.Timestamp) primitive.T
 	return primitive.Timestamp{T: uint32(seconds), I: uint32(nanos)}
 }
 
-func CheckSeatAvailable(seatData domain.Compartment2) (int, error) {
-	for _, ch := range seatData.SeatDetails {
-		if ch.IsReserved {
-			return ch.SeatNumber, nil
+func CheckSeatAvailable(numberofTravelers int, seatData domain.Compartment2) ([]int64, error) {
+	seatnumbers := make([]int64, numberofTravelers)
+
+	for i := 0; i < numberofTravelers; i++ {
+		if seatData.SeatDetails[i].IsReserved {
+			seatnumbers[i] = int64(seatData.SeatDetails[i].SeatNumber)
 		}
 	}
-	return 0, fmt.Errorf("No seat availble")
+	return seatnumbers, nil
+}
+
+func PriceCalculation(seatDetails domain.Compartment2, numberofTraverls int) float64 {
+	return float64(seatDetails.Price) * float64(numberofTraverls)
+}
+
+func PaymentCalculation(wallet domain.UserWallet, ticket domain.Ticket) error {
+	if wallet.WalletBalance >= ticket.TotalAmount {
+		return nil
+	}
+	return fmt.Errorf("Insufficient funds")
+}
+
+func GeneratePNR() int64 {
+	rand.Seed(time.Now().UnixNano())
+	randomNumber := rand.Intn(1000000)
+	randomNumber = randomNumber % 1000000
+	return int64(randomNumber)
 }
