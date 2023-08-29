@@ -62,11 +62,11 @@ func ConvertToPrimitiveTimestamp(pbTimestamp *timestamppb.Timestamp) primitive.T
 }
 
 func CheckSeatAvailable(numberofTravelers int, seatData domain.Compartment2) ([]int64, error) {
-	seatnumbers := make([]int64, numberofTravelers)
+	var seatnumbers []int64
 
 	for i := 0; i < numberofTravelers; i++ {
 		if seatData.SeatDetails[i].IsReserved {
-			seatnumbers[i] = int64(seatData.SeatDetails[i].SeatNumber)
+			seatnumbers = append(seatnumbers, int64(seatData.SeatDetails[i].SeatNumber))
 		}
 	}
 	return seatnumbers, nil

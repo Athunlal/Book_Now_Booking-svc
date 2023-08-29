@@ -21,11 +21,10 @@ func (db *TrainDataBase) GetTicketById(ctx context.Context, ticket domain.Ticket
 	var tickets domain.Ticket
 	filter := bson.M{"_id": ticket.TicketId}
 
-	err := collection.FindOne(ctx, filter).Decode(&ticket)
+	err := collection.FindOne(ctx, filter).Decode(&tickets)
 	if err != nil {
-		return ticket, err
+		return domain.Ticket{}, err
 	}
-
 	return tickets, nil
 }
 

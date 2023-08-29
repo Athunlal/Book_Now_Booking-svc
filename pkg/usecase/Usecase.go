@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowBooking-svc/pkg/repository/interface"
@@ -23,7 +24,7 @@ func (use *BookingUseCase) ViewTicket(ctx context.Context, tickets domain.Ticket
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println(res)
 	return &res, nil
 }
 
@@ -97,7 +98,7 @@ func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.B
 	price := utils.PriceCalculation(seatDetail, len(bookingData.Travelers))
 	//check seat availability
 	seatNumber, err := utils.CheckSeatAvailable(len(bookingData.Travelers), seatDetail)
-
+	fmt.Println("this is the seatnumber :", seatNumber)
 	//fetch user data
 	userData, err := usermodule.GetUserData(use.Client, bookingData.Userid)
 	if err != nil {
@@ -115,7 +116,7 @@ func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.B
 	pnr := utils.GeneratePNR()
 
 	ticket := domain.Ticket{
-		TicketId:             trainData.TrainId,
+		Trainid:              trainData.TrainId,
 		Trainname:            trainData.TrainName,
 		Trainnumber:          int64(trainData.TrainNumber),
 		Sourcestationid:      bookingData.SourceStationid,
