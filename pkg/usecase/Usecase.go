@@ -17,6 +17,16 @@ type BookingUseCase struct {
 	Client pb.ProfileManagementClient
 }
 
+// ViewTicket implements interfaces.BookingUseCase.
+func (use *BookingUseCase) ViewTicket(ctx context.Context, tickets domain.Ticket) (*domain.Ticket, error) {
+	res, err := use.Repo.GetTicketById(ctx, tickets)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
 // UpdateAmount implements interfaces.BookingUseCase.
 func (use *BookingUseCase) UpdateAmount(ctx context.Context, wallet domain.UserWallet) error {
 	res, err := use.Repo.FetchWalletDatabyUserid(ctx, wallet)

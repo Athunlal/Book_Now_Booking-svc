@@ -24,6 +24,7 @@ type BookingManagementClient interface {
 	Payment(ctx context.Context, in *PaymentRequest, opts ...grpc.CallOption) (*PaymentResponse, error)
 	CreateWallet(ctx context.Context, in *CreateWalletRequest, opts ...grpc.CallOption) (*CreateWalletResponse, error)
 	UpdateAmount(ctx context.Context, in *UpdateAmountRequest, opts ...grpc.CallOption) (*UpdateAmountResponse, error)
+	ViewTicket(ctx context.Context, in *ViewTicketRequest, opts ...grpc.CallOption) (*ViewTicketResponse, error)
 }
 
 type bookingManagementClient struct {
@@ -88,6 +89,15 @@ func (c *bookingManagementClient) UpdateAmount(ctx context.Context, in *UpdateAm
 	return out, nil
 }
 
+func (c *bookingManagementClient) ViewTicket(ctx context.Context, in *ViewTicketRequest, opts ...grpc.CallOption) (*ViewTicketResponse, error) {
+	out := new(ViewTicketResponse)
+	err := c.cc.Invoke(ctx, "/Booking.BookingManagement/ViewTicket", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BookingManagementServer is the server API for BookingManagement service.
 // All implementations must embed UnimplementedBookingManagementServer
 // for forward compatibility
@@ -98,6 +108,7 @@ type BookingManagementServer interface {
 	Payment(context.Context, *PaymentRequest) (*PaymentResponse, error)
 	CreateWallet(context.Context, *CreateWalletRequest) (*CreateWalletResponse, error)
 	UpdateAmount(context.Context, *UpdateAmountRequest) (*UpdateAmountResponse, error)
+	ViewTicket(context.Context, *ViewTicketRequest) (*ViewTicketResponse, error)
 	mustEmbedUnimplementedBookingManagementServer()
 }
 
@@ -122,6 +133,9 @@ func (UnimplementedBookingManagementServer) CreateWallet(context.Context, *Creat
 }
 func (UnimplementedBookingManagementServer) UpdateAmount(context.Context, *UpdateAmountRequest) (*UpdateAmountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAmount not implemented")
+}
+func (UnimplementedBookingManagementServer) ViewTicket(context.Context, *ViewTicketRequest) (*ViewTicketResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ViewTicket not implemented")
 }
 func (UnimplementedBookingManagementServer) mustEmbedUnimplementedBookingManagementServer() {}
 
@@ -244,6 +258,24 @@ func _BookingManagement_UpdateAmount_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BookingManagement_ViewTicket_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ViewTicketRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookingManagementServer).ViewTicket(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Booking.BookingManagement/ViewTicket",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookingManagementServer).ViewTicket(ctx, req.(*ViewTicketRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BookingManagement_ServiceDesc is the grpc.ServiceDesc for BookingManagement service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -274,6 +306,10 @@ var BookingManagement_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateAmount",
 			Handler:    _BookingManagement_UpdateAmount_Handler,
+		},
+		{
+			MethodName: "ViewTicket",
+			Handler:    _BookingManagement_ViewTicket_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -23,6 +23,54 @@ func NewBookingHandler(usecase interfaces.BookingUseCase) *BookingHandler {
 	}
 }
 
+func (h *BookingHandler) ViewTicket(ctx context.Context, req *pb.ViewTicketRequest) (*pb.ViewTicketResponse, error) {
+	id, err := primitive.ObjectIDFromHex(req.Ticketid)
+	if err != nil {
+		return nil, err
+	}
+	res, err := h.useCasse.ViewTicket(ctx, domain.Ticket{
+		TicketId: id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	Travelers := []*pb.Travelers{}
+
+	for _, ch := range res.Travelers {
+		traveler := &pb.Travelers{
+			Travelername: ch.Travelername,
+		}
+
+		Travelers = append(Travelers, traveler)
+	}
+
+	var seatNumber string
+	for i, num := range res.SeatNumbers {
+		if i == len(res.SeatNumbers)-1 {
+			seatNumber += strconv.FormatInt(num, 10)
+		} else {
+			seatNumber += strconv.FormatInt(num, 10) + ","
+		}
+	}
+
+	return &pb.ViewTicketResponse{
+		Trainname:            res.Trainname,
+		Travelers:            Travelers,
+		Trainnumber:          res.Trainnumber,
+		Sourgestationid:      res.Sourcestationid.Hex(),
+		Destinationstationid: res.DestinationStationid.Hex(),
+		PnRnumber:            res.PNRnumber,
+		Userid:               res.Userid,
+		Username:             res.Username,
+		Classname:            res.Classname,
+		Compartmentid:        res.CompartmentId.Hex(),
+		Totalamount:          float32(res.TotalAmount),
+		Seatnumbers:          seatNumber,
+		Isvalide:             false,
+	}, nil
+}
+
 func (h *BookingHandler) UpdateAmount(ctx context.Context, req *pb.UpdateAmountRequest) (*pb.UpdateAmountResponse, error) {
 	wallet := domain.UserWallet{
 		Userid:        req.Userid,
@@ -59,11 +107,18 @@ func (h *BookingHandler) CreateWallet(ctx context.Context, req *pb.CreateWalletR
 
 func (h *BookingHandler) Payment(ctx context.Context, req *pb.PaymentRequest) (*pb.PaymentResponse, error) {
 
-	h.useCasse.Payment(ctx, domain.Payment{
+	res, err := h.useCasse.Payment(ctx, domain.Payment{
 		Userid:    req.Userid,
 		PNRnumber: req.PNRnumber,
 	})
-	return &pb.PaymentResponse{}, nil
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.PaymentResponse{
+		Ticketid: res.TicketId.Hex(),
+	}, nil
 }
 
 func (h *BookingHandler) Checkout(ctx context.Context, req *pb.CheckoutRequest) (*pb.CheckoutResponse, error) {

@@ -15,6 +15,20 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// GetTicketByPNRandUserId implements interfaces.BookingRepo.
+func (db *TrainDataBase) GetTicketById(ctx context.Context, ticket domain.Ticket) (domain.Ticket, error) {
+	collection := db.DB.Collection("tickets")
+	var tickets domain.Ticket
+	filter := bson.M{"_id": ticket.TicketId}
+
+	err := collection.FindOne(ctx, filter).Decode(&ticket)
+	if err != nil {
+		return ticket, err
+	}
+
+	return tickets, nil
+}
+
 // GetTicketByPNR implements interfaces.BookingRepo.
 func (db *TrainDataBase) GetTicketByPNR(ctx context.Context, PNR int64) (domain.Ticket, error) {
 	collectionRoute := db.DB.Collection("tickets")

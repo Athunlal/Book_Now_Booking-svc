@@ -166,7 +166,7 @@ type Payment struct {
 }
 
 type Ticket struct {
-	TicketId             primitive.ObjectID `bson:"train_id,omitempty"`
+	TicketId             primitive.ObjectID `bson:"_id,omitempty"`
 	Trainname            string             `bson:"trainname"`
 	Trainnumber          int64              `bson:"trainnumber"`
 	Sourcestationid      primitive.ObjectID `bson:"sourcestationid"`

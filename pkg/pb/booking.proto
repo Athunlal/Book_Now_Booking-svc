@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package Booking;
 
+import "google/protobuf/wrappers.proto";
+
 option go_package = "./pkg/pb";
 
 service BookingManagement {
@@ -11,7 +13,28 @@ service BookingManagement {
     rpc Payment(PaymentRequest)returns(PaymentResponse){}
     rpc CreateWallet(CreateWalletRequest)returns(CreateWalletResponse){}
     rpc UpdateAmount(UpdateAmountRequest)returns(UpdateAmountResponse){}
+    rpc ViewTicket(ViewTicketRequest)returns(ViewTicketResponse){}
 }
+//View Tickets
+message ViewTicketRequest{
+    string ticketid = 1;;
+}
+message ViewTicketResponse {
+    string trainname = 1;
+    repeated Travelers travelers = 2;
+    int64 trainnumber = 3;
+    string sourgestationid = 4;
+    string destinationstationid = 5;
+    int64 pnRnumber = 6;
+    int64 userid = 7;
+    string username = 8;
+    string classname = 9;
+    string compartmentid = 10;
+    float totalamount = 11;
+    string seatnumbers = 12;
+    bool isvalide = 13;
+}
+
 //add Amount
 message UpdateAmountRequest{
     int64 userid = 1;

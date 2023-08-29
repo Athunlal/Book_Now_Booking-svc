@@ -33,4 +33,6 @@ type BookingRepo interface {
 	UpdateCompartment(ctx context.Context, seatNumber int64, compartmentID primitive.ObjectID) error
 
 	GetTicketByPNR(ctx context.Context, PNR int64) (domain.Ticket, error)
+
+	GetTicketById(ctx context.Context, ticket domain.Ticket) (domain.Ticket, error)
 }
