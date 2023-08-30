@@ -96,9 +96,9 @@ func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.B
 	}
 
 	price := utils.PriceCalculation(seatDetail, len(bookingData.Travelers))
+
 	//check seat availability
 	seatNumber, err := utils.CheckSeatAvailable(len(bookingData.Travelers), seatDetail)
-	fmt.Println("this is the seatnumber :", seatNumber)
 	//fetch user data
 	userData, err := usermodule.GetUserData(use.Client, bookingData.Userid)
 	if err != nil {

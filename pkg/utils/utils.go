@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"time"
@@ -63,12 +64,18 @@ func ConvertToPrimitiveTimestamp(pbTimestamp *timestamppb.Timestamp) primitive.T
 
 func CheckSeatAvailable(numberofTravelers int, seatData domain.Compartment2) ([]int64, error) {
 	var seatnumbers []int64
-
-	for i := 0; i < numberofTravelers; i++ {
+	fmt.Println(seatData.SeatDetails)
+	for i := 0; i < len(seatData.SeatDetails); i++ {
 		if seatData.SeatDetails[i].IsReserved {
+			fmt.Println(i)
 			seatnumbers = append(seatnumbers, int64(seatData.SeatDetails[i].SeatNumber))
 		}
 	}
+	if numberofTravelers > len(seatnumbers) {
+		return nil, errors.New("Not enough reserved seats available")
+	}
+
+	seatnumbers = seatnumbers[:numberofTravelers]
 	return seatnumbers, nil
 }
 
