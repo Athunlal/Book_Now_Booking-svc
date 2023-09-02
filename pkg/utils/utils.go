@@ -83,7 +83,7 @@ func PriceCalculation(seatDetails domain.Compartment2, numberofTraverls int) flo
 	return float64(seatDetails.Price) * float64(numberofTraverls)
 }
 
-func PaymentCalculation(wallet domain.UserWallet, ticket domain.Ticket) error {
+func PaymentCalculation(wallet domain.UserWallet, ticket *domain.Ticket) error {
 	if wallet.WalletBalance >= ticket.TotalAmount {
 		return nil
 	}

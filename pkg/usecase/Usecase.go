@@ -24,7 +24,6 @@ func (use *BookingUseCase) ViewTicket(ctx context.Context, tickets domain.Ticket
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(res)
 	return &res, nil
 }
 
@@ -54,28 +53,75 @@ func (use *BookingUseCase) CreateWallet(ctx context.Context, wallet domain.UserW
 
 // Payment implements interfaces.BookingUseCase.
 func (use *BookingUseCase) Payment(ctx context.Context, paymentData domain.Payment) (*domain.Payment, error) {
-	wallet, err := use.Repo.FetchWalletDatabyUserid(ctx, domain.UserWallet{
-		Userid: paymentData.Userid,
-	})
+	wallet, err := use.getWalletData(ctx, paymentData.Userid)
 	if err != nil {
 		return nil, err
 	}
-	ticket, err := use.Repo.GetTicketByPNR(ctx, paymentData.PNRnumber)
 
-	if err := utils.PaymentCalculation(*wallet, ticket); err != nil {
+	ticket, err := use.getTicketData(ctx, paymentData.PNRnumber)
+	if err != nil {
 		return nil, err
 	}
 
-	for _, ch := range ticket.SeatNumbers {
-		err := use.Repo.UpdateCompartment(ctx, ch, ticket.CompartmentId)
-		if err != nil {
-			return nil, err
-		}
+	if err := use.updatePaymentStatus(ctx, &ticket); err != nil {
+		return nil, err
+	}
+
+	if err := utils.PaymentCalculation(*wallet, &ticket); err != nil {
+		return nil, err
+	}
+
+	if err := use.updateSeatCompartments(ctx, &ticket); err != nil {
+		return nil, err
+	}
+
+	if err := use.updateWalletBalance(ctx, wallet, &ticket); err != nil {
+		return nil, err
 	}
 
 	return &domain.Payment{
 		TicketId: ticket.TicketId,
 	}, nil
+}
+
+func (use *BookingUseCase) deleteTicket(ctx context.Context, ticket domain.Ticket) error {
+	return use.Repo.DeleteTicket(ctx, ticket)
+}
+
+func (use *BookingUseCase) getWalletData(ctx context.Context, userid int64) (*domain.UserWallet, error) {
+	return use.Repo.FetchWalletDatabyUserid(ctx, domain.UserWallet{Userid: userid})
+}
+
+func (use *BookingUseCase) getTicketData(ctx context.Context, PNRnumber int64) (domain.Ticket, error) {
+	return use.Repo.GetTicketByPNR(ctx, PNRnumber)
+}
+
+func (use *BookingUseCase) updatePaymentStatus(ctx context.Context, ticket *domain.Ticket) error {
+	if ticket.PaymentStatus {
+		return fmt.Errorf("Payment already done")
+	}
+	return use.Repo.UpdateTicket(ctx, domain.Ticket{
+		TicketId:      ticket.TicketId,
+		PaymentStatus: true,
+	})
+}
+
+func (use *BookingUseCase) updateSeatCompartments(ctx context.Context, ticket *domain.Ticket) error {
+	for _, ch := range ticket.SeatNumbers {
+		err := use.Repo.UpdateCompartment(ctx, ch, ticket.CompartmentId)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (use *BookingUseCase) updateWalletBalance(ctx context.Context, wallet *domain.UserWallet, ticket *domain.Ticket) error {
+	updateAmount := wallet.WalletBalance - ticket.TotalAmount
+	return use.Repo.UpdateAmount(ctx, domain.UserWallet{
+		Userid:        wallet.Userid,
+		WalletBalance: updateAmount,
+	})
 }
 
 // SeatBooking implements interfaces.BookingUseCase.
@@ -126,6 +172,7 @@ func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.B
 		Classname:            seatDetail.TypeOfSeat,
 		SeatNumbers:          seatNumber,
 		TotalAmount:          price,
+		PaymentStatus:        false,
 		CompartmentId:        Compartmentid,
 		Travelers:            travelers,
 		IsValide:             true,

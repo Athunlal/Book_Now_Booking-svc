@@ -35,4 +35,7 @@ type BookingRepo interface {
 	GetTicketByPNR(ctx context.Context, PNR int64) (domain.Ticket, error)
 
 	GetTicketById(ctx context.Context, ticket domain.Ticket) (domain.Ticket, error)
+
+	UpdateTicket(ctx context.Context, ticket domain.Ticket) error
+	DeleteTicket(ctx context.Context, ticket domain.Ticket) error
 }

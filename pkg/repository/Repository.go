@@ -15,6 +15,27 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// DeleteTicket implements interfaces.BookingRepo.
+func (db *TrainDataBase) DeleteTicket(ctx context.Context, ticket domain.Ticket) error {
+	collection := db.DB.Collection("tickets")
+	filter := bson.M{"_id": ticket.TicketId}
+	_, err := collection.DeleteOne(ctx, filter)
+	return err
+}
+
+// UpdateTicket implements interfaces.BookingRepo.
+func (db *TrainDataBase) UpdateTicket(ctx context.Context, ticket domain.Ticket) error {
+	collection := db.DB.Collection("tickets")
+	filter := bson.M{"_id": ticket.TicketId}
+	update := bson.M{"$set": bson.M{"paymentstatus": ticket.PaymentStatus}}
+
+	_, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // GetTicketByPNRandUserId implements interfaces.BookingRepo.
 func (db *TrainDataBase) GetTicketById(ctx context.Context, ticket domain.Ticket) (domain.Ticket, error) {
 	collection := db.DB.Collection("tickets")
