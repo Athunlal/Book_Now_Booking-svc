@@ -23,6 +23,27 @@ func NewBookingHandler(usecase interfaces.BookingUseCase) *BookingHandler {
 	}
 }
 
+func (h *BookingHandler) CancelTicket(ctx context.Context, req *pb.CancelTicketRequest) (*pb.CancelTicketResponse, error) {
+	id, err := primitive.ObjectIDFromHex(req.Ticketid)
+	if err != nil {
+		return nil, err
+	}
+	err = h.useCasse.CancelletionTicket(ctx, domain.Ticket{
+		TicketId: id,
+		Userid:   req.Userid,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CancelTicketResponse{
+		Status: http.StatusOK,
+		Error:  "",
+	}, nil
+
+}
+
 func (h *BookingHandler) ViewTicket(ctx context.Context, req *pb.ViewTicketRequest) (*pb.ViewTicketResponse, error) {
 	id, err := primitive.ObjectIDFromHex(req.Ticketid)
 	if err != nil {

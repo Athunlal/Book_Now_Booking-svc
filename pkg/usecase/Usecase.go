@@ -18,6 +18,26 @@ type BookingUseCase struct {
 	Client pb.ProfileManagementClient
 }
 
+// CancelletionTicket implements interfaces.BookingUseCase.
+func (use *BookingUseCase) CancelletionTicket(ctx context.Context, ticket domain.Ticket) error {
+	res, err := use.Repo.GetTicketById(ctx, ticket)
+	if err != nil {
+		return err
+	}
+	err = use.Repo.UpdateAmount(ctx, domain.UserWallet{
+		Userid:        ticket.Userid,
+		WalletBalance: res.TotalAmount,
+	})
+	if err != nil {
+		return err
+	}
+	err = use.deleteTicket(ctx, ticket)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // ViewTicket implements interfaces.BookingUseCase.
 func (use *BookingUseCase) ViewTicket(ctx context.Context, tickets domain.Ticket) (*domain.Ticket, error) {
 	res, err := use.Repo.GetTicketById(ctx, tickets)
@@ -63,11 +83,11 @@ func (use *BookingUseCase) Payment(ctx context.Context, paymentData domain.Payme
 		return nil, err
 	}
 
-	if err := use.updatePaymentStatus(ctx, &ticket); err != nil {
+	if err := utils.PaymentCalculation(*wallet, &ticket); err != nil {
 		return nil, err
 	}
 
-	if err := utils.PaymentCalculation(*wallet, &ticket); err != nil {
+	if err := use.updatePaymentStatus(ctx, &ticket); err != nil {
 		return nil, err
 	}
 

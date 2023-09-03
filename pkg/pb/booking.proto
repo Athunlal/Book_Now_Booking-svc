@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package Booking;
 
-import "google/protobuf/wrappers.proto";
 
 option go_package = "./pkg/pb";
 
@@ -14,7 +13,19 @@ service BookingManagement {
     rpc CreateWallet(CreateWalletRequest)returns(CreateWalletResponse){}
     rpc UpdateAmount(UpdateAmountRequest)returns(UpdateAmountResponse){}
     rpc ViewTicket(ViewTicketRequest)returns(ViewTicketResponse){}
+    rpc CancelTicket(CancelTicketRequest)returns(CancelTicketResponse){}
 }
+
+//Cancel Ticket
+message CancelTicketRequest{
+    string ticketid = 1;
+    int64 userid = 2;
+}
+message CancelTicketResponse{
+    int64 status = 1;
+    string error = 2;
+}
+
 //View Tickets
 message ViewTicketRequest{
     string ticketid = 1;;
