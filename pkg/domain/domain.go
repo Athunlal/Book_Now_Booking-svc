@@ -192,3 +192,9 @@ type UserWallet struct {
 	Amount        float64            `bson:"amount"`
 	WalletBalance float64            `bson:"walletBalance"`
 }
+
+type SeatUpdateData struct {
+	Seatid     primitive.ObjectID
+	SeatNumber int64
+	Status     bool
+}

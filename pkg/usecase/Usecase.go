@@ -249,6 +249,12 @@ func (use *BookingUseCase) SearchCompartment(ctx context.Context, trainid domain
 		response.CompartmentDetails[i].SeatDetails = seatDetails
 	}
 
+	for _, ch := range response.CompartmentDetails {
+		if ok := utils.CheckAvailableStatus(ch.SeatDetails); !ok {
+			use.Repo.UpdateAvailableStatus(ctx, ch.SeatIds, false)
+		}
+	}
+
 	return response, nil
 }
 

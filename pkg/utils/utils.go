@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"errors"
 	"fmt"
 	"math/rand"
 	"time"
@@ -52,10 +51,6 @@ func SeateAllocation(seateData domain.SeatData) domain.Seats {
 	return allocated
 }
 
-func RouteVerification(searchData domain.SearchingTrainRequstedData, Routemap []struct{ StationID primitive.ObjectID }) bool {
-	return false
-}
-
 func ConvertToPrimitiveTimestamp(pbTimestamp *timestamppb.Timestamp) primitive.Timestamp {
 	seconds := pbTimestamp.GetSeconds()
 	nanos := pbTimestamp.GetNanos()
@@ -64,15 +59,14 @@ func ConvertToPrimitiveTimestamp(pbTimestamp *timestamppb.Timestamp) primitive.T
 
 func CheckSeatAvailable(numberofTravelers int, seatData domain.Compartment2) ([]int64, error) {
 	var seatnumbers []int64
-	fmt.Println(seatData.SeatDetails)
-	for i := 0; i < len(seatData.SeatDetails); i++ {
-		if seatData.SeatDetails[i].IsReserved {
-			fmt.Println(i)
-			seatnumbers = append(seatnumbers, int64(seatData.SeatDetails[i].SeatNumber))
+	for _, seat := range seatData.SeatDetails {
+		if seat.IsReserved {
+			seatnumbers = append(seatnumbers, int64(seat.SeatNumber))
 		}
 	}
+
 	if numberofTravelers > len(seatnumbers) {
-		return nil, errors.New("Not enough reserved seats available")
+		return nil, fmt.Errorf("not enough available seats")
 	}
 
 	seatnumbers = seatnumbers[:numberofTravelers]
@@ -95,4 +89,13 @@ func GeneratePNR() int64 {
 	randomNumber := rand.Intn(1000000)
 	randomNumber = randomNumber % 1000000
 	return int64(randomNumber)
+}
+
+func CheckAvailableStatus(seat []domain.SeatDetail) bool {
+	for _, ch := range seat {
+		if ch.IsReserved {
+			return true
+		}
+	}
+	return false
 }

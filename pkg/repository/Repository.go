@@ -15,6 +15,19 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// UpdateAvailableStatus implements interfaces.BookingRepo.
+func (db *TrainDataBase) UpdateAvailableStatus(ctx context.Context, compartmentID primitive.ObjectID, status bool) error {
+	collection := db.DB.Collection("seat")
+	filter := bson.M{"_id": compartmentID}
+	update := bson.M{"$set": bson.M{"availability": status}}
+
+	_, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // DeleteTicket implements interfaces.BookingRepo.
 func (db *TrainDataBase) DeleteTicket(ctx context.Context, ticket domain.Ticket) error {
 	collection := db.DB.Collection("tickets")

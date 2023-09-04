@@ -38,4 +38,6 @@ type BookingRepo interface {
 
 	UpdateTicket(ctx context.Context, ticket domain.Ticket) error
 	DeleteTicket(ctx context.Context, ticket domain.Ticket) error
+
+	UpdateAvailableStatus(ctx context.Context, compartmentID primitive.ObjectID, status bool) error
 }
