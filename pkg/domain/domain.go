@@ -198,3 +198,6 @@ type SeatUpdateData struct {
 	SeatNumber int64
 	Status     bool
 }
+type BookingHistory struct {
+	Ticket []Ticket
+}

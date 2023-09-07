@@ -3,9 +3,11 @@ package utils
 import (
 	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
+	"github.com/athunlal/bookNowBooking-svc/pkg/pb"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -66,7 +68,7 @@ func CheckSeatAvailable(numberofTravelers int, seatData domain.Compartment2) ([]
 	}
 
 	if numberofTravelers > len(seatnumbers) {
-		return nil, fmt.Errorf("not enough available seats")
+		return nil, fmt.Errorf("seat unavailable")
 	}
 
 	seatnumbers = seatnumbers[:numberofTravelers]
@@ -98,4 +100,45 @@ func CheckAvailableStatus(seat []domain.SeatDetail) bool {
 		}
 	}
 	return false
+}
+
+func convertingArraytoString(arr []int64) string {
+	var seatNumber string
+	for i, num := range arr {
+		if i == len(arr)-1 {
+			seatNumber += strconv.FormatInt(num, 10)
+		} else {
+			seatNumber += strconv.FormatInt(num, 10) + ","
+		}
+	}
+	return seatNumber
+}
+
+func convertingTavelers(Travelers []domain.Travelers) []*pb.Travelers {
+	var travelors []*pb.Travelers
+	for _, traveler := range Travelers {
+		pbTraveler := &pb.Travelers{
+			Travelername: traveler.Travelername,
+		}
+		travelors = append(travelors, pbTraveler)
+	}
+	return travelors
+}
+
+func ConvertTicketToViewBookingResponse(ticket domain.Ticket) *pb.ViewTicketResponse {
+	return &pb.ViewTicketResponse{
+		Trainname:            ticket.Trainname,
+		Trainnumber:          ticket.Trainnumber,
+		Travelers:            convertingTavelers(ticket.Travelers),
+		Sourgestationid:      ticket.Sourcestationid.Hex(),
+		Destinationstationid: ticket.DestinationStationid.Hex(),
+		PnRnumber:            ticket.PNRnumber,
+		Userid:               ticket.Userid,
+		Username:             ticket.Username,
+		Classname:            ticket.Classname,
+		Compartmentid:        ticket.CompartmentId.Hex(),
+		Totalamount:          float32(ticket.TotalAmount),
+		Seatnumbers:          convertingArraytoString(ticket.SeatNumbers),
+		Isvalide:             ticket.IsValide,
+	}
 }

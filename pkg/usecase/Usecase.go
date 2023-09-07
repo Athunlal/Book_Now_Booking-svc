@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
@@ -18,11 +19,23 @@ type BookingUseCase struct {
 	Client pb.ProfileManagementClient
 }
 
+// BookingHistory implements interfaces.BookingUseCase.
+func (use *BookingUseCase) BookingHistory(ctx context.Context, userid int64) (*domain.BookingHistory, error) {
+	res, err := use.Repo.BookingHistory(ctx, userid)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 // CancelletionTicket implements interfaces.BookingUseCase.
 func (use *BookingUseCase) CancelletionTicket(ctx context.Context, ticket domain.Ticket) error {
 	res, err := use.Repo.GetTicketById(ctx, ticket)
 	if err != nil {
 		return err
+	}
+	if !res.IsValide {
+		return errors.New("Already canceled")
 	}
 	err = use.Repo.UpdateAmount(ctx, domain.UserWallet{
 		Userid:        ticket.Userid,
@@ -31,7 +44,18 @@ func (use *BookingUseCase) CancelletionTicket(ctx context.Context, ticket domain
 	if err != nil {
 		return err
 	}
-	err = use.deleteTicket(ctx, ticket)
+
+	for _, ch := range res.SeatNumbers {
+		err := use.Repo.UpdateCompartment(ctx, ch, res.CompartmentId, true)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = use.Repo.UpdateTicketValidateStatus(ctx, domain.Ticket{
+		TicketId: ticket.TicketId,
+		IsValide: false,
+	})
 	if err != nil {
 		return err
 	}
@@ -43,6 +67,9 @@ func (use *BookingUseCase) ViewTicket(ctx context.Context, tickets domain.Ticket
 	res, err := use.Repo.GetTicketById(ctx, tickets)
 	if err != nil {
 		return nil, err
+	}
+	if !res.IsValide {
+		return nil, errors.New("Ticket canceld")
 	}
 	return &res, nil
 }
@@ -123,12 +150,14 @@ func (use *BookingUseCase) updatePaymentStatus(ctx context.Context, ticket *doma
 	return use.Repo.UpdateTicket(ctx, domain.Ticket{
 		TicketId:      ticket.TicketId,
 		PaymentStatus: true,
+		IsValide:      true,
 	})
 }
 
 func (use *BookingUseCase) updateSeatCompartments(ctx context.Context, ticket *domain.Ticket) error {
+
 	for _, ch := range ticket.SeatNumbers {
-		err := use.Repo.UpdateCompartment(ctx, ch, ticket.CompartmentId)
+		err := use.Repo.UpdateCompartment(ctx, ch, ticket.CompartmentId, false)
 		if err != nil {
 			return err
 		}
@@ -165,6 +194,9 @@ func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.B
 
 	//check seat availability
 	seatNumber, err := utils.CheckSeatAvailable(len(bookingData.Travelers), seatDetail)
+	if err != nil {
+		return domain.CheckoutDetails{}, err
+	}
 	//fetch user data
 	userData, err := usermodule.GetUserData(use.Client, bookingData.Userid)
 	if err != nil {
@@ -192,10 +224,11 @@ func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.B
 		Classname:            seatDetail.TypeOfSeat,
 		SeatNumbers:          seatNumber,
 		TotalAmount:          price,
+		Userid:               bookingData.Userid,
 		PaymentStatus:        false,
 		CompartmentId:        Compartmentid,
 		Travelers:            travelers,
-		IsValide:             true,
+		IsValide:             false,
 	}
 
 	err = use.Repo.CreatTicket(ctx, ticket)

@@ -9,6 +9,7 @@ import (
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	"github.com/athunlal/bookNowBooking-svc/pkg/pb"
 	interfaces "github.com/athunlal/bookNowBooking-svc/pkg/usecase/interface"
+	"github.com/athunlal/bookNowBooking-svc/pkg/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -21,6 +22,24 @@ func NewBookingHandler(usecase interfaces.BookingUseCase) *BookingHandler {
 	return &BookingHandler{
 		useCasse: usecase,
 	}
+}
+
+func (h *BookingHandler) BookingHistory(ctx context.Context, req *pb.BookingHistroyRequest) (*pb.BookingHistoryResponse, error) {
+	res, err := h.useCasse.BookingHistory(ctx, req.Userid)
+	if err != nil {
+		return nil, err
+	}
+	var viewTicketResponses []*pb.ViewTicketResponse
+	for _, ticket := range res.Ticket {
+		viewTicketResponse := utils.ConvertTicketToViewBookingResponse(ticket)
+		viewTicketResponses = append(viewTicketResponses, viewTicketResponse)
+	}
+
+	response := &pb.BookingHistoryResponse{
+		Response: viewTicketResponses,
+	}
+
+	return response, nil
 }
 
 func (h *BookingHandler) CancelTicket(ctx context.Context, req *pb.CancelTicketRequest) (*pb.CancelTicketResponse, error) {
@@ -88,7 +107,7 @@ func (h *BookingHandler) ViewTicket(ctx context.Context, req *pb.ViewTicketReque
 		Compartmentid:        res.CompartmentId.Hex(),
 		Totalamount:          float32(res.TotalAmount),
 		Seatnumbers:          seatNumber,
-		Isvalide:             false,
+		Isvalide:             res.IsValide,
 	}, nil
 }
 

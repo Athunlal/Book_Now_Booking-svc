@@ -30,7 +30,7 @@ type BookingRepo interface {
 
 	CreatTicket(ctx context.Context, ticketData domain.Ticket) error
 
-	UpdateCompartment(ctx context.Context, seatNumber int64, compartmentID primitive.ObjectID) error
+	UpdateCompartment(ctx context.Context, seatNumber int64, compartmentID primitive.ObjectID, status bool) error
 
 	GetTicketByPNR(ctx context.Context, PNR int64) (domain.Ticket, error)
 
@@ -40,4 +40,8 @@ type BookingRepo interface {
 	DeleteTicket(ctx context.Context, ticket domain.Ticket) error
 
 	UpdateAvailableStatus(ctx context.Context, compartmentID primitive.ObjectID, status bool) error
+
+	UpdateTicketValidateStatus(ctx context.Context, ticket domain.Ticket) error
+
+	BookingHistory(ctx context.Context, userid int64) (*domain.BookingHistory, error)
 }

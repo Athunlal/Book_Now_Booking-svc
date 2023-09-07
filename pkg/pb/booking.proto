@@ -14,6 +14,15 @@ service BookingManagement {
     rpc UpdateAmount(UpdateAmountRequest)returns(UpdateAmountResponse){}
     rpc ViewTicket(ViewTicketRequest)returns(ViewTicketResponse){}
     rpc CancelTicket(CancelTicketRequest)returns(CancelTicketResponse){}
+    rpc BookingHistory(BookingHistroyRequest)returns(BookingHistoryResponse){}
+}
+
+//Booking history 
+message BookingHistroyRequest{
+    int64 userid = 1;
+}
+message BookingHistoryResponse{
+   repeated ViewTicketResponse response =1;
 }
 
 //Cancel Ticket

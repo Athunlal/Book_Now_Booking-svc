@@ -15,6 +15,44 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// BookingHistory implements interfaces.BookingRepo.
+func (db *TrainDataBase) BookingHistory(ctx context.Context, userid int64) (*domain.BookingHistory, error) {
+	var bookingHistory domain.BookingHistory
+
+	filter := bson.M{"userid": userid}
+	cur, err := db.DB.Collection("tickets").Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(ctx)
+
+	for cur.Next(ctx) {
+		var ticket domain.Ticket
+		if err := cur.Decode(&ticket); err != nil {
+			return nil, err
+		}
+		bookingHistory.Ticket = append(bookingHistory.Ticket, ticket)
+	}
+
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
+	return &bookingHistory, nil
+}
+
+func (db *TrainDataBase) UpdateTicketValidateStatus(ctx context.Context, ticket domain.Ticket) error {
+	collection := db.DB.Collection("tickets")
+	filter := bson.M{"_id": ticket.TicketId}
+	update := bson.M{"$set": bson.M{"isvalide": ticket.IsValide}}
+
+	_, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // UpdateAvailableStatus implements interfaces.BookingRepo.
 func (db *TrainDataBase) UpdateAvailableStatus(ctx context.Context, compartmentID primitive.ObjectID, status bool) error {
 	collection := db.DB.Collection("seat")
@@ -40,7 +78,11 @@ func (db *TrainDataBase) DeleteTicket(ctx context.Context, ticket domain.Ticket)
 func (db *TrainDataBase) UpdateTicket(ctx context.Context, ticket domain.Ticket) error {
 	collection := db.DB.Collection("tickets")
 	filter := bson.M{"_id": ticket.TicketId}
-	update := bson.M{"$set": bson.M{"paymentstatus": ticket.PaymentStatus}}
+	update := bson.M{"$set": bson.M{
+		"paymentstatus": ticket.PaymentStatus,
+		"isvalide":      ticket.IsValide,
+	},
+	}
 
 	_, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
@@ -77,10 +119,10 @@ func (db *TrainDataBase) GetTicketByPNR(ctx context.Context, PNR int64) (domain.
 }
 
 // UpdateCompartment implements interfaces.BookingRepo.
-func (db *TrainDataBase) UpdateCompartment(ctx context.Context, seatNumber int64, compartmentID primitive.ObjectID) error {
+func (db *TrainDataBase) UpdateCompartment(ctx context.Context, seatNumber int64, compartmentID primitive.ObjectID, status bool) error {
 	collection := db.DB.Collection("seat")
 	filter := bson.M{"_id": compartmentID, "seatDetails.seatnumber": seatNumber}
-	update := bson.M{"$set": bson.M{"seatDetails.$.isreserved": false}}
+	update := bson.M{"$set": bson.M{"seatDetails.$.isreserved": status}}
 
 	_, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
