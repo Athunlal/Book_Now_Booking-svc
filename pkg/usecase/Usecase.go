@@ -293,10 +293,17 @@ func (use *BookingUseCase) SearchCompartment(ctx context.Context, trainid domain
 
 // SearchTrain implements interfaces.BookingUseCase.
 func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
+
 	routeData, err := use.Repo.FindRouteById(ctx, searcheData)
+	if err != nil {
+		return domain.SearchingTrainResponseData{}, err
+	}
 	trainData, err := use.Repo.FindTrainByRoutid(ctx, domain.Train{
 		Route: routeData.RouteID,
 	})
+	if err != nil {
+		return domain.SearchingTrainResponseData{}, err
+	}
 
 	return trainData, err
 }

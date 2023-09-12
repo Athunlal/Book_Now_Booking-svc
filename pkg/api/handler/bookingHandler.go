@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -246,31 +245,56 @@ func (h *BookingHandler) SearchCompartment(ctx context.Context, req *pb.SearchCo
 }
 
 func (h *BookingHandler) SearchTrain(ctx context.Context, req *pb.SearchTrainRequest) (*pb.SearchTrainResponse, error) {
+
+	searchData, err := prepareSearchData(req)
+	if err != nil {
+		return handleSearchError(err)
+	}
+
+	res, err := h.useCasse.SearchTrain(ctx, searchData)
+	if err != nil {
+		return handleSearchError(err)
+	}
+
+	trainDataList := convertToTrainDataList(res)
+
+	response := createSearchTrainResponse(trainDataList)
+	return response, nil
+}
+
+func prepareSearchData(req *pb.SearchTrainRequest) (domain.SearchingTrainRequstedData, error) {
 	sourceid, err := primitive.ObjectIDFromHex(req.Sourcestationid)
 	if err != nil {
-		log.Fatal("Converting the string to primitive.ObjectId err", err)
+		return domain.SearchingTrainRequstedData{}, err
 	}
+
 	destinationid, err := primitive.ObjectIDFromHex(req.Destinationstationid)
 	if err != nil {
-		log.Fatal("Converting the string to primitive.ObjectId err", err)
+		return domain.SearchingTrainRequstedData{}, err
 	}
+
 	searchData := domain.SearchingTrainRequstedData{
 		Date:                 req.Date,
 		SourceStationid:      sourceid,
 		DestinationStationid: destinationid,
 	}
 
-	res, err := h.useCasse.SearchTrain(ctx, searchData)
-	if err != nil {
-		return &pb.SearchTrainResponse{
-			Status: http.StatusUnprocessableEntity,
-			Error:  err.Error(),
-		}, err
-	}
+	return searchData, nil
+}
 
-	// Convert the domain search result to protobuf TrainData
+func handleSearchError(err error) (*pb.SearchTrainResponse, error) {
+	return &pb.SearchTrainResponse{
+		Status: http.StatusUnprocessableEntity,
+		Error:  err.Error(),
+	}, err
+}
+
+func convertToTrainDataList(res domain.SearchingTrainResponseData) []*pb.TrainData {
 	var trainDataList []*pb.TrainData
-	for i, _ := range res.TrainNames {
+	if len(res.TrainNames) < 1 {
+		return nil
+	}
+	for i := range res.TrainNames {
 		trainData := &pb.TrainData{
 			Trainid:      res.TrainId[i],
 			Trainname:    res.TrainNames[i],
@@ -280,11 +304,12 @@ func (h *BookingHandler) SearchTrain(ctx context.Context, req *pb.SearchTrainReq
 		}
 		trainDataList = append(trainDataList, trainData)
 	}
+	return trainDataList
+}
 
-	response := &pb.SearchTrainResponse{
+func createSearchTrainResponse(trainDataList []*pb.TrainData) *pb.SearchTrainResponse {
+	return &pb.SearchTrainResponse{
 		Status:    http.StatusOK,
 		Traindata: trainDataList,
 	}
-
-	return response, nil
 }

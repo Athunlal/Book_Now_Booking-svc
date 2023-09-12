@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"log"
+	"fmt"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowBooking-svc/pkg/repository/interface"
@@ -36,6 +36,10 @@ func (db *TrainDataBase) BookingHistory(ctx context.Context, userid int64) (*dom
 
 	if err := cur.Err(); err != nil {
 		return nil, err
+	}
+
+	if len(bookingHistory.Ticket) == 0 {
+		return nil, fmt.Errorf("no booking history found for user")
 	}
 
 	return &bookingHistory, nil
@@ -291,6 +295,7 @@ func (db *TrainDataBase) FindroutebyName(ctx context.Context, route domain.Route
 
 // SearchTrain implements interfaces.BookingRepo.
 func (db *TrainDataBase) FindRouteById(ctx context.Context, searchData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
+
 	collection := db.DB.Collection("route")
 	sourceStationID := searchData.SourceStationid
 	destinationStationID := searchData.DestinationStationid
@@ -332,22 +337,32 @@ func (db *TrainDataBase) FindRouteById(ctx context.Context, searchData domain.Se
 			},
 		},
 	}
+
 	cursor, err := collection.Aggregate(context.Background(), pipeline)
 	if err != nil {
-		log.Fatal(err)
+		return domain.SearchingTrainResponseData{}, err
 	}
 	defer cursor.Close(context.Background())
 
 	var results []domain.RouteResult
 
 	if err := cursor.All(context.Background(), &results); err != nil {
-		log.Fatal(err)
+		return domain.SearchingTrainResponseData{}, err
 	}
+
+	if len(results) == 0 {
+		return domain.SearchingTrainResponseData{}, fmt.Errorf("no route found")
+	}
+
 	routeid, err := primitive.ObjectIDFromHex(results[0].ID)
+	if err != nil {
+		return domain.SearchingTrainResponseData{}, err
+	}
+
 	return domain.SearchingTrainResponseData{
 		RouteID:   routeid,
 		RouteName: results[0].RouteName,
-	}, err
+	}, nil
 }
 
 // ViewTrain implements interfaces.BookingRepo.
