@@ -20,6 +20,154 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type ViewCompartmentRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *ViewCompartmentRequest) Reset() {
+	*x = ViewCompartmentRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pkg_pb_booking_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ViewCompartmentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ViewCompartmentRequest) ProtoMessage() {}
+
+func (x *ViewCompartmentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_pb_booking_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ViewCompartmentRequest.ProtoReflect.Descriptor instead.
+func (*ViewCompartmentRequest) Descriptor() ([]byte, []int) {
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{0}
+}
+
+type ViewCompartmentResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Compartment []*CompartmentDetails `protobuf:"bytes,1,rep,name=compartment,proto3" json:"compartment,omitempty"`
+}
+
+func (x *ViewCompartmentResponse) Reset() {
+	*x = ViewCompartmentResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pkg_pb_booking_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ViewCompartmentResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ViewCompartmentResponse) ProtoMessage() {}
+
+func (x *ViewCompartmentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_pb_booking_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ViewCompartmentResponse.ProtoReflect.Descriptor instead.
+func (*ViewCompartmentResponse) Descriptor() ([]byte, []int) {
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ViewCompartmentResponse) GetCompartment() []*CompartmentDetails {
+	if x != nil {
+		return x.Compartment
+	}
+	return nil
+}
+
+type CompartmentDetails struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	CompartmentId   string `protobuf:"bytes,1,opt,name=compartmentId,proto3" json:"compartmentId,omitempty"`
+	CompartmentType string `protobuf:"bytes,2,opt,name=compartmentType,proto3" json:"compartmentType,omitempty"`
+	Price           string `protobuf:"bytes,3,opt,name=price,proto3" json:"price,omitempty"`
+}
+
+func (x *CompartmentDetails) Reset() {
+	*x = CompartmentDetails{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_pkg_pb_booking_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CompartmentDetails) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompartmentDetails) ProtoMessage() {}
+
+func (x *CompartmentDetails) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_pb_booking_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompartmentDetails.ProtoReflect.Descriptor instead.
+func (*CompartmentDetails) Descriptor() ([]byte, []int) {
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *CompartmentDetails) GetCompartmentId() string {
+	if x != nil {
+		return x.CompartmentId
+	}
+	return ""
+}
+
+func (x *CompartmentDetails) GetCompartmentType() string {
+	if x != nil {
+		return x.CompartmentType
+	}
+	return ""
+}
+
+func (x *CompartmentDetails) GetPrice() string {
+	if x != nil {
+		return x.Price
+	}
+	return ""
+}
+
 //Booking history
 type BookingHistroyRequest struct {
 	state         protoimpl.MessageState
@@ -32,7 +180,7 @@ type BookingHistroyRequest struct {
 func (x *BookingHistroyRequest) Reset() {
 	*x = BookingHistroyRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[0]
+		mi := &file_pkg_pb_booking_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -45,7 +193,7 @@ func (x *BookingHistroyRequest) String() string {
 func (*BookingHistroyRequest) ProtoMessage() {}
 
 func (x *BookingHistroyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[0]
+	mi := &file_pkg_pb_booking_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,7 +206,7 @@ func (x *BookingHistroyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BookingHistroyRequest.ProtoReflect.Descriptor instead.
 func (*BookingHistroyRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{0}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *BookingHistroyRequest) GetUserid() int64 {
@@ -79,7 +227,7 @@ type BookingHistoryResponse struct {
 func (x *BookingHistoryResponse) Reset() {
 	*x = BookingHistoryResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[1]
+		mi := &file_pkg_pb_booking_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -92,7 +240,7 @@ func (x *BookingHistoryResponse) String() string {
 func (*BookingHistoryResponse) ProtoMessage() {}
 
 func (x *BookingHistoryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[1]
+	mi := &file_pkg_pb_booking_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -105,7 +253,7 @@ func (x *BookingHistoryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BookingHistoryResponse.ProtoReflect.Descriptor instead.
 func (*BookingHistoryResponse) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{1}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *BookingHistoryResponse) GetResponse() []*ViewTicketResponse {
@@ -128,7 +276,7 @@ type CancelTicketRequest struct {
 func (x *CancelTicketRequest) Reset() {
 	*x = CancelTicketRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[2]
+		mi := &file_pkg_pb_booking_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -141,7 +289,7 @@ func (x *CancelTicketRequest) String() string {
 func (*CancelTicketRequest) ProtoMessage() {}
 
 func (x *CancelTicketRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[2]
+	mi := &file_pkg_pb_booking_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -154,7 +302,7 @@ func (x *CancelTicketRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelTicketRequest.ProtoReflect.Descriptor instead.
 func (*CancelTicketRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{2}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CancelTicketRequest) GetTicketid() string {
@@ -183,7 +331,7 @@ type CancelTicketResponse struct {
 func (x *CancelTicketResponse) Reset() {
 	*x = CancelTicketResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[3]
+		mi := &file_pkg_pb_booking_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -196,7 +344,7 @@ func (x *CancelTicketResponse) String() string {
 func (*CancelTicketResponse) ProtoMessage() {}
 
 func (x *CancelTicketResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[3]
+	mi := &file_pkg_pb_booking_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -209,7 +357,7 @@ func (x *CancelTicketResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelTicketResponse.ProtoReflect.Descriptor instead.
 func (*CancelTicketResponse) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{3}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CancelTicketResponse) GetStatus() int64 {
@@ -238,7 +386,7 @@ type ViewTicketRequest struct {
 func (x *ViewTicketRequest) Reset() {
 	*x = ViewTicketRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[4]
+		mi := &file_pkg_pb_booking_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -251,7 +399,7 @@ func (x *ViewTicketRequest) String() string {
 func (*ViewTicketRequest) ProtoMessage() {}
 
 func (x *ViewTicketRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[4]
+	mi := &file_pkg_pb_booking_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -264,7 +412,7 @@ func (x *ViewTicketRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ViewTicketRequest.ProtoReflect.Descriptor instead.
 func (*ViewTicketRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{4}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ViewTicketRequest) GetTicketid() string {
@@ -297,7 +445,7 @@ type ViewTicketResponse struct {
 func (x *ViewTicketResponse) Reset() {
 	*x = ViewTicketResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[5]
+		mi := &file_pkg_pb_booking_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -310,7 +458,7 @@ func (x *ViewTicketResponse) String() string {
 func (*ViewTicketResponse) ProtoMessage() {}
 
 func (x *ViewTicketResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[5]
+	mi := &file_pkg_pb_booking_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -323,7 +471,7 @@ func (x *ViewTicketResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ViewTicketResponse.ProtoReflect.Descriptor instead.
 func (*ViewTicketResponse) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{5}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ViewTicketResponse) GetTrainname() string {
@@ -430,7 +578,7 @@ type UpdateAmountRequest struct {
 func (x *UpdateAmountRequest) Reset() {
 	*x = UpdateAmountRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[6]
+		mi := &file_pkg_pb_booking_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -443,7 +591,7 @@ func (x *UpdateAmountRequest) String() string {
 func (*UpdateAmountRequest) ProtoMessage() {}
 
 func (x *UpdateAmountRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[6]
+	mi := &file_pkg_pb_booking_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -456,7 +604,7 @@ func (x *UpdateAmountRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAmountRequest.ProtoReflect.Descriptor instead.
 func (*UpdateAmountRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{6}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *UpdateAmountRequest) GetUserid() int64 {
@@ -485,7 +633,7 @@ type UpdateAmountResponse struct {
 func (x *UpdateAmountResponse) Reset() {
 	*x = UpdateAmountResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[7]
+		mi := &file_pkg_pb_booking_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -498,7 +646,7 @@ func (x *UpdateAmountResponse) String() string {
 func (*UpdateAmountResponse) ProtoMessage() {}
 
 func (x *UpdateAmountResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[7]
+	mi := &file_pkg_pb_booking_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -511,7 +659,7 @@ func (x *UpdateAmountResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAmountResponse.ProtoReflect.Descriptor instead.
 func (*UpdateAmountResponse) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{7}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *UpdateAmountResponse) GetStatus() int64 {
@@ -541,7 +689,7 @@ type CreateWalletRequest struct {
 func (x *CreateWalletRequest) Reset() {
 	*x = CreateWalletRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[8]
+		mi := &file_pkg_pb_booking_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -554,7 +702,7 @@ func (x *CreateWalletRequest) String() string {
 func (*CreateWalletRequest) ProtoMessage() {}
 
 func (x *CreateWalletRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[8]
+	mi := &file_pkg_pb_booking_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -567,7 +715,7 @@ func (x *CreateWalletRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateWalletRequest.ProtoReflect.Descriptor instead.
 func (*CreateWalletRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{8}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *CreateWalletRequest) GetUserid() int64 {
@@ -596,7 +744,7 @@ type CreateWalletResponse struct {
 func (x *CreateWalletResponse) Reset() {
 	*x = CreateWalletResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[9]
+		mi := &file_pkg_pb_booking_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -609,7 +757,7 @@ func (x *CreateWalletResponse) String() string {
 func (*CreateWalletResponse) ProtoMessage() {}
 
 func (x *CreateWalletResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[9]
+	mi := &file_pkg_pb_booking_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -622,7 +770,7 @@ func (x *CreateWalletResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateWalletResponse.ProtoReflect.Descriptor instead.
 func (*CreateWalletResponse) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{9}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *CreateWalletResponse) GetStatus() int64 {
@@ -652,7 +800,7 @@ type PaymentRequest struct {
 func (x *PaymentRequest) Reset() {
 	*x = PaymentRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[10]
+		mi := &file_pkg_pb_booking_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -665,7 +813,7 @@ func (x *PaymentRequest) String() string {
 func (*PaymentRequest) ProtoMessage() {}
 
 func (x *PaymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[10]
+	mi := &file_pkg_pb_booking_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -678,7 +826,7 @@ func (x *PaymentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PaymentRequest.ProtoReflect.Descriptor instead.
 func (*PaymentRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{10}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *PaymentRequest) GetUserid() int64 {
@@ -708,7 +856,7 @@ type PaymentResponse struct {
 func (x *PaymentResponse) Reset() {
 	*x = PaymentResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[11]
+		mi := &file_pkg_pb_booking_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -721,7 +869,7 @@ func (x *PaymentResponse) String() string {
 func (*PaymentResponse) ProtoMessage() {}
 
 func (x *PaymentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[11]
+	mi := &file_pkg_pb_booking_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -734,7 +882,7 @@ func (x *PaymentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PaymentResponse.ProtoReflect.Descriptor instead.
 func (*PaymentResponse) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{11}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *PaymentResponse) GetStatus() int64 {
@@ -775,7 +923,7 @@ type CheckoutRequest struct {
 func (x *CheckoutRequest) Reset() {
 	*x = CheckoutRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[12]
+		mi := &file_pkg_pb_booking_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -788,7 +936,7 @@ func (x *CheckoutRequest) String() string {
 func (*CheckoutRequest) ProtoMessage() {}
 
 func (x *CheckoutRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[12]
+	mi := &file_pkg_pb_booking_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -801,7 +949,7 @@ func (x *CheckoutRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckoutRequest.ProtoReflect.Descriptor instead.
 func (*CheckoutRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{12}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *CheckoutRequest) GetCompartmentid() string {
@@ -865,7 +1013,7 @@ type CheckoutResponse struct {
 func (x *CheckoutResponse) Reset() {
 	*x = CheckoutResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[13]
+		mi := &file_pkg_pb_booking_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -878,7 +1026,7 @@ func (x *CheckoutResponse) String() string {
 func (*CheckoutResponse) ProtoMessage() {}
 
 func (x *CheckoutResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[13]
+	mi := &file_pkg_pb_booking_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -891,7 +1039,7 @@ func (x *CheckoutResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckoutResponse.ProtoReflect.Descriptor instead.
 func (*CheckoutResponse) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{13}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *CheckoutResponse) GetError() string {
@@ -968,7 +1116,7 @@ type Travelers struct {
 func (x *Travelers) Reset() {
 	*x = Travelers{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[14]
+		mi := &file_pkg_pb_booking_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -981,7 +1129,7 @@ func (x *Travelers) String() string {
 func (*Travelers) ProtoMessage() {}
 
 func (x *Travelers) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[14]
+	mi := &file_pkg_pb_booking_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -994,7 +1142,7 @@ func (x *Travelers) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Travelers.ProtoReflect.Descriptor instead.
 func (*Travelers) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{14}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *Travelers) GetTravelername() string {
@@ -1016,7 +1164,7 @@ type SearchCompartmentRequest struct {
 func (x *SearchCompartmentRequest) Reset() {
 	*x = SearchCompartmentRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[15]
+		mi := &file_pkg_pb_booking_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1029,7 +1177,7 @@ func (x *SearchCompartmentRequest) String() string {
 func (*SearchCompartmentRequest) ProtoMessage() {}
 
 func (x *SearchCompartmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[15]
+	mi := &file_pkg_pb_booking_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1042,7 +1190,7 @@ func (x *SearchCompartmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchCompartmentRequest.ProtoReflect.Descriptor instead.
 func (*SearchCompartmentRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{15}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *SearchCompartmentRequest) GetTrainid() string {
@@ -1063,7 +1211,7 @@ type SearchCompartmentResponse struct {
 func (x *SearchCompartmentResponse) Reset() {
 	*x = SearchCompartmentResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[16]
+		mi := &file_pkg_pb_booking_proto_msgTypes[19]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1076,7 +1224,7 @@ func (x *SearchCompartmentResponse) String() string {
 func (*SearchCompartmentResponse) ProtoMessage() {}
 
 func (x *SearchCompartmentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[16]
+	mi := &file_pkg_pb_booking_proto_msgTypes[19]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1089,7 +1237,7 @@ func (x *SearchCompartmentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchCompartmentResponse.ProtoReflect.Descriptor instead.
 func (*SearchCompartmentResponse) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{16}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *SearchCompartmentResponse) GetCompartment() []*Compartment {
@@ -1114,7 +1262,7 @@ type Compartment struct {
 func (x *Compartment) Reset() {
 	*x = Compartment{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[17]
+		mi := &file_pkg_pb_booking_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1127,7 +1275,7 @@ func (x *Compartment) String() string {
 func (*Compartment) ProtoMessage() {}
 
 func (x *Compartment) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[17]
+	mi := &file_pkg_pb_booking_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1140,7 +1288,7 @@ func (x *Compartment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Compartment.ProtoReflect.Descriptor instead.
 func (*Compartment) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{17}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *Compartment) GetCompartmentid() string {
@@ -1198,7 +1346,7 @@ type SearchTrainRequest struct {
 func (x *SearchTrainRequest) Reset() {
 	*x = SearchTrainRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[18]
+		mi := &file_pkg_pb_booking_proto_msgTypes[21]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1211,7 +1359,7 @@ func (x *SearchTrainRequest) String() string {
 func (*SearchTrainRequest) ProtoMessage() {}
 
 func (x *SearchTrainRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[18]
+	mi := &file_pkg_pb_booking_proto_msgTypes[21]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1224,7 +1372,7 @@ func (x *SearchTrainRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchTrainRequest.ProtoReflect.Descriptor instead.
 func (*SearchTrainRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{18}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *SearchTrainRequest) GetDate() string {
@@ -1261,7 +1409,7 @@ type SearchTrainResponse struct {
 func (x *SearchTrainResponse) Reset() {
 	*x = SearchTrainResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[19]
+		mi := &file_pkg_pb_booking_proto_msgTypes[22]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1274,7 +1422,7 @@ func (x *SearchTrainResponse) String() string {
 func (*SearchTrainResponse) ProtoMessage() {}
 
 func (x *SearchTrainResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[19]
+	mi := &file_pkg_pb_booking_proto_msgTypes[22]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1287,7 +1435,7 @@ func (x *SearchTrainResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchTrainResponse.ProtoReflect.Descriptor instead.
 func (*SearchTrainResponse) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{19}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *SearchTrainResponse) GetStatus() int64 {
@@ -1327,7 +1475,7 @@ type TrainData struct {
 func (x *TrainData) Reset() {
 	*x = TrainData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_pkg_pb_booking_proto_msgTypes[20]
+		mi := &file_pkg_pb_booking_proto_msgTypes[23]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1340,7 +1488,7 @@ func (x *TrainData) String() string {
 func (*TrainData) ProtoMessage() {}
 
 func (x *TrainData) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_pb_booking_proto_msgTypes[20]
+	mi := &file_pkg_pb_booking_proto_msgTypes[23]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1353,7 +1501,7 @@ func (x *TrainData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TrainData.ProtoReflect.Descriptor instead.
 func (*TrainData) Descriptor() ([]byte, []int) {
-	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{20}
+	return file_pkg_pb_booking_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *TrainData) GetTrainname() string {
@@ -1403,6 +1551,21 @@ var File_pkg_pb_booking_proto protoreflect.FileDescriptor
 var file_pkg_pb_booking_proto_rawDesc = []byte{
 	0x0a, 0x14, 0x70, 0x6b, 0x67, 0x2f, 0x70, 0x62, 0x2f, 0x62, 0x6f, 0x6f, 0x6b, 0x69, 0x6e, 0x67,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x07, 0x42, 0x6f, 0x6f, 0x6b, 0x69, 0x6e, 0x67, 0x22,
+	0x18, 0x0a, 0x16, 0x56, 0x69, 0x65, 0x77, 0x43, 0x6f, 0x6d, 0x70, 0x61, 0x72, 0x74, 0x6d, 0x65,
+	0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x58, 0x0a, 0x17, 0x56, 0x69, 0x65,
+	0x77, 0x43, 0x6f, 0x6d, 0x70, 0x61, 0x72, 0x74, 0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3d, 0x0a, 0x0b, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x72, 0x74, 0x6d,
+	0x65, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x42, 0x6f, 0x6f, 0x6b,
+	0x69, 0x6e, 0x67, 0x2e, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x72, 0x74, 0x6d, 0x65, 0x6e, 0x74, 0x44,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x52, 0x0b, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x72, 0x74, 0x6d,
+	0x65, 0x6e, 0x74, 0x22, 0x7a, 0x0a, 0x12, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x72, 0x74, 0x6d, 0x65,
+	0x6e, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x73, 0x12, 0x24, 0x0a, 0x0d, 0x63, 0x6f, 0x6d,
+	0x70, 0x61, 0x72, 0x74, 0x6d, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0d, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x72, 0x74, 0x6d, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x12,
+	0x28, 0x0a, 0x0f, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x72, 0x74, 0x6d, 0x65, 0x6e, 0x74, 0x54, 0x79,
+	0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x72,
+	0x74, 0x6d, 0x65, 0x6e, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x70, 0x72, 0x69,
+	0x63, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x70, 0x72, 0x69, 0x63, 0x65, 0x22,
 	0x2f, 0x0a, 0x15, 0x42, 0x6f, 0x6f, 0x6b, 0x69, 0x6e, 0x67, 0x48, 0x69, 0x73, 0x74, 0x72, 0x6f,
 	0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x75, 0x73, 0x65, 0x72,
 	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x06, 0x75, 0x73, 0x65, 0x72, 0x69, 0x64,
@@ -1571,7 +1734,7 @@ var file_pkg_pb_booking_proto_rawDesc = []byte{
 	0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x64, 0x69, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x18, 0x05,
 	0x20, 0x01, 0x28, 0x02, 0x52, 0x08, 0x64, 0x69, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x12, 0x18,
 	0x0a, 0x07, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x69, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x07, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x69, 0x64, 0x32, 0xcb, 0x05, 0x0a, 0x11, 0x42, 0x6f, 0x6f,
+	0x07, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x69, 0x64, 0x32, 0xa3, 0x06, 0x0a, 0x11, 0x42, 0x6f, 0x6f,
 	0x6b, 0x69, 0x6e, 0x67, 0x4d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x4a,
 	0x0a, 0x0b, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x54, 0x72, 0x61, 0x69, 0x6e, 0x12, 0x1b, 0x2e,
 	0x42, 0x6f, 0x6f, 0x6b, 0x69, 0x6e, 0x67, 0x2e, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x54, 0x72,
@@ -1616,8 +1779,14 @@ var file_pkg_pb_booking_proto_rawDesc = []byte{
 	0x6f, 0x6b, 0x69, 0x6e, 0x67, 0x48, 0x69, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x52, 0x65, 0x71, 0x75,
 	0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x42, 0x6f, 0x6f, 0x6b, 0x69, 0x6e, 0x67, 0x2e, 0x42, 0x6f,
 	0x6f, 0x6b, 0x69, 0x6e, 0x67, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x0a, 0x5a, 0x08, 0x2e, 0x2f, 0x70, 0x6b, 0x67, 0x2f,
-	0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x56, 0x0a, 0x0f, 0x56, 0x69, 0x65, 0x77, 0x43, 0x6f,
+	0x6d, 0x70, 0x61, 0x72, 0x74, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x1f, 0x2e, 0x42, 0x6f, 0x6f, 0x6b,
+	0x69, 0x6e, 0x67, 0x2e, 0x56, 0x69, 0x65, 0x77, 0x43, 0x6f, 0x6d, 0x70, 0x61, 0x72, 0x74, 0x6d,
+	0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x42, 0x6f, 0x6f,
+	0x6b, 0x69, 0x6e, 0x67, 0x2e, 0x56, 0x69, 0x65, 0x77, 0x43, 0x6f, 0x6d, 0x70, 0x61, 0x72, 0x74,
+	0x6d, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x0a,
+	0x5a, 0x08, 0x2e, 0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -1632,60 +1801,66 @@ func file_pkg_pb_booking_proto_rawDescGZIP() []byte {
 	return file_pkg_pb_booking_proto_rawDescData
 }
 
-var file_pkg_pb_booking_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
+var file_pkg_pb_booking_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_pkg_pb_booking_proto_goTypes = []interface{}{
-	(*BookingHistroyRequest)(nil),     // 0: Booking.BookingHistroyRequest
-	(*BookingHistoryResponse)(nil),    // 1: Booking.BookingHistoryResponse
-	(*CancelTicketRequest)(nil),       // 2: Booking.CancelTicketRequest
-	(*CancelTicketResponse)(nil),      // 3: Booking.CancelTicketResponse
-	(*ViewTicketRequest)(nil),         // 4: Booking.ViewTicketRequest
-	(*ViewTicketResponse)(nil),        // 5: Booking.ViewTicketResponse
-	(*UpdateAmountRequest)(nil),       // 6: Booking.UpdateAmountRequest
-	(*UpdateAmountResponse)(nil),      // 7: Booking.UpdateAmountResponse
-	(*CreateWalletRequest)(nil),       // 8: Booking.CreateWalletRequest
-	(*CreateWalletResponse)(nil),      // 9: Booking.CreateWalletResponse
-	(*PaymentRequest)(nil),            // 10: Booking.PaymentRequest
-	(*PaymentResponse)(nil),           // 11: Booking.PaymentResponse
-	(*CheckoutRequest)(nil),           // 12: Booking.CheckoutRequest
-	(*CheckoutResponse)(nil),          // 13: Booking.CheckoutResponse
-	(*Travelers)(nil),                 // 14: Booking.Travelers
-	(*SearchCompartmentRequest)(nil),  // 15: Booking.SearchCompartmentRequest
-	(*SearchCompartmentResponse)(nil), // 16: Booking.SearchCompartmentResponse
-	(*Compartment)(nil),               // 17: Booking.compartment
-	(*SearchTrainRequest)(nil),        // 18: Booking.SearchTrainRequest
-	(*SearchTrainResponse)(nil),       // 19: Booking.SearchTrainResponse
-	(*TrainData)(nil),                 // 20: Booking.TrainData
+	(*ViewCompartmentRequest)(nil),    // 0: Booking.ViewCompartmentRequest
+	(*ViewCompartmentResponse)(nil),   // 1: Booking.ViewCompartmentResponse
+	(*CompartmentDetails)(nil),        // 2: Booking.compartmentDetails
+	(*BookingHistroyRequest)(nil),     // 3: Booking.BookingHistroyRequest
+	(*BookingHistoryResponse)(nil),    // 4: Booking.BookingHistoryResponse
+	(*CancelTicketRequest)(nil),       // 5: Booking.CancelTicketRequest
+	(*CancelTicketResponse)(nil),      // 6: Booking.CancelTicketResponse
+	(*ViewTicketRequest)(nil),         // 7: Booking.ViewTicketRequest
+	(*ViewTicketResponse)(nil),        // 8: Booking.ViewTicketResponse
+	(*UpdateAmountRequest)(nil),       // 9: Booking.UpdateAmountRequest
+	(*UpdateAmountResponse)(nil),      // 10: Booking.UpdateAmountResponse
+	(*CreateWalletRequest)(nil),       // 11: Booking.CreateWalletRequest
+	(*CreateWalletResponse)(nil),      // 12: Booking.CreateWalletResponse
+	(*PaymentRequest)(nil),            // 13: Booking.PaymentRequest
+	(*PaymentResponse)(nil),           // 14: Booking.PaymentResponse
+	(*CheckoutRequest)(nil),           // 15: Booking.CheckoutRequest
+	(*CheckoutResponse)(nil),          // 16: Booking.CheckoutResponse
+	(*Travelers)(nil),                 // 17: Booking.Travelers
+	(*SearchCompartmentRequest)(nil),  // 18: Booking.SearchCompartmentRequest
+	(*SearchCompartmentResponse)(nil), // 19: Booking.SearchCompartmentResponse
+	(*Compartment)(nil),               // 20: Booking.compartment
+	(*SearchTrainRequest)(nil),        // 21: Booking.SearchTrainRequest
+	(*SearchTrainResponse)(nil),       // 22: Booking.SearchTrainResponse
+	(*TrainData)(nil),                 // 23: Booking.TrainData
 }
 var file_pkg_pb_booking_proto_depIdxs = []int32{
-	5,  // 0: Booking.BookingHistoryResponse.response:type_name -> Booking.ViewTicketResponse
-	14, // 1: Booking.ViewTicketResponse.travelers:type_name -> Booking.Travelers
-	14, // 2: Booking.CheckoutRequest.travelers:type_name -> Booking.Travelers
-	14, // 3: Booking.CheckoutResponse.Travelers:type_name -> Booking.Travelers
-	17, // 4: Booking.SearchCompartmentResponse.compartment:type_name -> Booking.compartment
-	20, // 5: Booking.SearchTrainResponse.traindata:type_name -> Booking.TrainData
-	18, // 6: Booking.BookingManagement.SearchTrain:input_type -> Booking.SearchTrainRequest
-	15, // 7: Booking.BookingManagement.SearchCompartment:input_type -> Booking.SearchCompartmentRequest
-	12, // 8: Booking.BookingManagement.Checkout:input_type -> Booking.CheckoutRequest
-	10, // 9: Booking.BookingManagement.Payment:input_type -> Booking.PaymentRequest
-	8,  // 10: Booking.BookingManagement.CreateWallet:input_type -> Booking.CreateWalletRequest
-	6,  // 11: Booking.BookingManagement.UpdateAmount:input_type -> Booking.UpdateAmountRequest
-	4,  // 12: Booking.BookingManagement.ViewTicket:input_type -> Booking.ViewTicketRequest
-	2,  // 13: Booking.BookingManagement.CancelTicket:input_type -> Booking.CancelTicketRequest
-	0,  // 14: Booking.BookingManagement.BookingHistory:input_type -> Booking.BookingHistroyRequest
-	19, // 15: Booking.BookingManagement.SearchTrain:output_type -> Booking.SearchTrainResponse
-	16, // 16: Booking.BookingManagement.SearchCompartment:output_type -> Booking.SearchCompartmentResponse
-	13, // 17: Booking.BookingManagement.Checkout:output_type -> Booking.CheckoutResponse
-	11, // 18: Booking.BookingManagement.Payment:output_type -> Booking.PaymentResponse
-	9,  // 19: Booking.BookingManagement.CreateWallet:output_type -> Booking.CreateWalletResponse
-	7,  // 20: Booking.BookingManagement.UpdateAmount:output_type -> Booking.UpdateAmountResponse
-	5,  // 21: Booking.BookingManagement.ViewTicket:output_type -> Booking.ViewTicketResponse
-	3,  // 22: Booking.BookingManagement.CancelTicket:output_type -> Booking.CancelTicketResponse
-	1,  // 23: Booking.BookingManagement.BookingHistory:output_type -> Booking.BookingHistoryResponse
-	15, // [15:24] is the sub-list for method output_type
-	6,  // [6:15] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	2,  // 0: Booking.ViewCompartmentResponse.compartment:type_name -> Booking.compartmentDetails
+	8,  // 1: Booking.BookingHistoryResponse.response:type_name -> Booking.ViewTicketResponse
+	17, // 2: Booking.ViewTicketResponse.travelers:type_name -> Booking.Travelers
+	17, // 3: Booking.CheckoutRequest.travelers:type_name -> Booking.Travelers
+	17, // 4: Booking.CheckoutResponse.Travelers:type_name -> Booking.Travelers
+	20, // 5: Booking.SearchCompartmentResponse.compartment:type_name -> Booking.compartment
+	23, // 6: Booking.SearchTrainResponse.traindata:type_name -> Booking.TrainData
+	21, // 7: Booking.BookingManagement.SearchTrain:input_type -> Booking.SearchTrainRequest
+	18, // 8: Booking.BookingManagement.SearchCompartment:input_type -> Booking.SearchCompartmentRequest
+	15, // 9: Booking.BookingManagement.Checkout:input_type -> Booking.CheckoutRequest
+	13, // 10: Booking.BookingManagement.Payment:input_type -> Booking.PaymentRequest
+	11, // 11: Booking.BookingManagement.CreateWallet:input_type -> Booking.CreateWalletRequest
+	9,  // 12: Booking.BookingManagement.UpdateAmount:input_type -> Booking.UpdateAmountRequest
+	7,  // 13: Booking.BookingManagement.ViewTicket:input_type -> Booking.ViewTicketRequest
+	5,  // 14: Booking.BookingManagement.CancelTicket:input_type -> Booking.CancelTicketRequest
+	3,  // 15: Booking.BookingManagement.BookingHistory:input_type -> Booking.BookingHistroyRequest
+	0,  // 16: Booking.BookingManagement.ViewCompartment:input_type -> Booking.ViewCompartmentRequest
+	22, // 17: Booking.BookingManagement.SearchTrain:output_type -> Booking.SearchTrainResponse
+	19, // 18: Booking.BookingManagement.SearchCompartment:output_type -> Booking.SearchCompartmentResponse
+	16, // 19: Booking.BookingManagement.Checkout:output_type -> Booking.CheckoutResponse
+	14, // 20: Booking.BookingManagement.Payment:output_type -> Booking.PaymentResponse
+	12, // 21: Booking.BookingManagement.CreateWallet:output_type -> Booking.CreateWalletResponse
+	10, // 22: Booking.BookingManagement.UpdateAmount:output_type -> Booking.UpdateAmountResponse
+	8,  // 23: Booking.BookingManagement.ViewTicket:output_type -> Booking.ViewTicketResponse
+	6,  // 24: Booking.BookingManagement.CancelTicket:output_type -> Booking.CancelTicketResponse
+	4,  // 25: Booking.BookingManagement.BookingHistory:output_type -> Booking.BookingHistoryResponse
+	1,  // 26: Booking.BookingManagement.ViewCompartment:output_type -> Booking.ViewCompartmentResponse
+	17, // [17:27] is the sub-list for method output_type
+	7,  // [7:17] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_pkg_pb_booking_proto_init() }
@@ -1695,7 +1870,7 @@ func file_pkg_pb_booking_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_pkg_pb_booking_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BookingHistroyRequest); i {
+			switch v := v.(*ViewCompartmentRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1707,7 +1882,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BookingHistoryResponse); i {
+			switch v := v.(*ViewCompartmentResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1719,7 +1894,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CancelTicketRequest); i {
+			switch v := v.(*CompartmentDetails); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1731,7 +1906,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CancelTicketResponse); i {
+			switch v := v.(*BookingHistroyRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1743,7 +1918,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ViewTicketRequest); i {
+			switch v := v.(*BookingHistoryResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1755,7 +1930,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ViewTicketResponse); i {
+			switch v := v.(*CancelTicketRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1767,7 +1942,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateAmountRequest); i {
+			switch v := v.(*CancelTicketResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1779,7 +1954,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdateAmountResponse); i {
+			switch v := v.(*ViewTicketRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1791,7 +1966,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateWalletRequest); i {
+			switch v := v.(*ViewTicketResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1803,7 +1978,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateWalletResponse); i {
+			switch v := v.(*UpdateAmountRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1815,7 +1990,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PaymentRequest); i {
+			switch v := v.(*UpdateAmountResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1827,7 +2002,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PaymentResponse); i {
+			switch v := v.(*CreateWalletRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1839,7 +2014,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CheckoutRequest); i {
+			switch v := v.(*CreateWalletResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1851,7 +2026,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CheckoutResponse); i {
+			switch v := v.(*PaymentRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1863,7 +2038,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Travelers); i {
+			switch v := v.(*PaymentResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1875,7 +2050,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SearchCompartmentRequest); i {
+			switch v := v.(*CheckoutRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1887,7 +2062,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SearchCompartmentResponse); i {
+			switch v := v.(*CheckoutResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1899,7 +2074,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Compartment); i {
+			switch v := v.(*Travelers); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1911,7 +2086,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SearchTrainRequest); i {
+			switch v := v.(*SearchCompartmentRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1923,7 +2098,7 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SearchTrainResponse); i {
+			switch v := v.(*SearchCompartmentResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1935,6 +2110,42 @@ func file_pkg_pb_booking_proto_init() {
 			}
 		}
 		file_pkg_pb_booking_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Compartment); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pkg_pb_booking_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SearchTrainRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pkg_pb_booking_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SearchTrainResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_pkg_pb_booking_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*TrainData); i {
 			case 0:
 				return &v.state
@@ -1953,7 +2164,7 @@ func file_pkg_pb_booking_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_pkg_pb_booking_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   21,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

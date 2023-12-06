@@ -16,6 +16,26 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// ViewCompartment implements interfaces.BookingRepo.
+func (db *TrainDataBase) ViewCompartment(ctx context.Context) ([]domain.CompartmentDetails, error) {
+	var compartmentDetails []domain.CompartmentDetails
+	cursor, err := db.DB.Collection("seat").Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	for cursor.Next(ctx) {
+		var comaprtment domain.CompartmentDetails
+		if err := cursor.Decode(&comaprtment); err != nil {
+			return nil, err
+		}
+		compartmentDetails = append(compartmentDetails, comaprtment)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+	return compartmentDetails, nil
+}
+
 // BookingHistory implements interfaces.BookingRepo.
 func (db *TrainDataBase) BookingHistory(ctx context.Context, userid int64) (*domain.BookingHistory, error) {
 	var bookingHistory domain.BookingHistory

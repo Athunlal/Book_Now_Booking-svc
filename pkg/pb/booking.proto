@@ -15,7 +15,20 @@ service BookingManagement {
     rpc ViewTicket(ViewTicketRequest)returns(ViewTicketResponse){}
     rpc CancelTicket(CancelTicketRequest)returns(CancelTicketResponse){}
     rpc BookingHistory(BookingHistroyRequest)returns(BookingHistoryResponse){}
+    rpc ViewCompartment(ViewCompartmentRequest)returns(ViewCompartmentResponse){}
 }
+
+message ViewCompartmentRequest{}
+message ViewCompartmentResponse{
+   repeated compartmentDetails compartment = 1;
+}
+
+message compartmentDetails {
+    string compartmentId = 1; 
+    string compartmentType = 2;
+    string price = 3;
+}
+
 
 //Booking history 
 message BookingHistroyRequest{

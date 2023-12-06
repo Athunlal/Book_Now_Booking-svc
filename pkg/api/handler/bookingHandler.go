@@ -23,6 +23,29 @@ func NewBookingHandler(usecase interfaces.BookingUseCase) *BookingHandler {
 	}
 }
 
+func (h *BookingHandler) ViewCompartment(ctx context.Context, req *pb.ViewCompartmentRequest) (*pb.ViewCompartmentResponse, error) {
+	res, err := h.useCasse.ViewCompartment(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return mapViewCompartmentToPbResponse(res), nil
+}
+
+func mapViewCompartmentToPbResponse(res []domain.CompartmentDetails) *pb.ViewCompartmentResponse {
+	var Compartments []*pb.CompartmentDetails
+	for _, val := range res {
+		compartment := pb.CompartmentDetails{
+			CompartmentId:   val.SeatIds.Hex(),
+			CompartmentType: val.Compartment,
+			Price:           string(val.Price),
+		}
+		Compartments = append(Compartments, &compartment)
+	}
+	return &pb.ViewCompartmentResponse{
+		Compartment: Compartments,
+	}
+}
+
 func (h *BookingHandler) BookingHistory(ctx context.Context, req *pb.BookingHistroyRequest) (*pb.BookingHistoryResponse, error) {
 	res, err := h.useCasse.BookingHistory(ctx, req.Userid)
 	if err != nil {

@@ -27,6 +27,7 @@ type BookingManagementClient interface {
 	ViewTicket(ctx context.Context, in *ViewTicketRequest, opts ...grpc.CallOption) (*ViewTicketResponse, error)
 	CancelTicket(ctx context.Context, in *CancelTicketRequest, opts ...grpc.CallOption) (*CancelTicketResponse, error)
 	BookingHistory(ctx context.Context, in *BookingHistroyRequest, opts ...grpc.CallOption) (*BookingHistoryResponse, error)
+	ViewCompartment(ctx context.Context, in *ViewCompartmentRequest, opts ...grpc.CallOption) (*ViewCompartmentResponse, error)
 }
 
 type bookingManagementClient struct {
@@ -118,6 +119,15 @@ func (c *bookingManagementClient) BookingHistory(ctx context.Context, in *Bookin
 	return out, nil
 }
 
+func (c *bookingManagementClient) ViewCompartment(ctx context.Context, in *ViewCompartmentRequest, opts ...grpc.CallOption) (*ViewCompartmentResponse, error) {
+	out := new(ViewCompartmentResponse)
+	err := c.cc.Invoke(ctx, "/Booking.BookingManagement/ViewCompartment", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BookingManagementServer is the server API for BookingManagement service.
 // All implementations must embed UnimplementedBookingManagementServer
 // for forward compatibility
@@ -131,6 +141,7 @@ type BookingManagementServer interface {
 	ViewTicket(context.Context, *ViewTicketRequest) (*ViewTicketResponse, error)
 	CancelTicket(context.Context, *CancelTicketRequest) (*CancelTicketResponse, error)
 	BookingHistory(context.Context, *BookingHistroyRequest) (*BookingHistoryResponse, error)
+	ViewCompartment(context.Context, *ViewCompartmentRequest) (*ViewCompartmentResponse, error)
 	mustEmbedUnimplementedBookingManagementServer()
 }
 
@@ -164,6 +175,9 @@ func (UnimplementedBookingManagementServer) CancelTicket(context.Context, *Cance
 }
 func (UnimplementedBookingManagementServer) BookingHistory(context.Context, *BookingHistroyRequest) (*BookingHistoryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BookingHistory not implemented")
+}
+func (UnimplementedBookingManagementServer) ViewCompartment(context.Context, *ViewCompartmentRequest) (*ViewCompartmentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ViewCompartment not implemented")
 }
 func (UnimplementedBookingManagementServer) mustEmbedUnimplementedBookingManagementServer() {}
 
@@ -340,6 +354,24 @@ func _BookingManagement_BookingHistory_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BookingManagement_ViewCompartment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ViewCompartmentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookingManagementServer).ViewCompartment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/Booking.BookingManagement/ViewCompartment",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookingManagementServer).ViewCompartment(ctx, req.(*ViewCompartmentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BookingManagement_ServiceDesc is the grpc.ServiceDesc for BookingManagement service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -382,6 +414,10 @@ var BookingManagement_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BookingHistory",
 			Handler:    _BookingManagement_BookingHistory_Handler,
+		},
+		{
+			MethodName: "ViewCompartment",
+			Handler:    _BookingManagement_ViewCompartment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
