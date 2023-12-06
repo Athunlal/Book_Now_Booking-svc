@@ -19,11 +19,6 @@ type BookingUseCase struct {
 	Client pb.ProfileManagementClient
 }
 
-// ViewCompartment implements interfaces.BookingUseCase.
-func (use *BookingUseCase) ViewCompartment(ctx context.Context) ([]domain.CompartmentDetails, error) {
-	return use.Repo.ViewCompartment(ctx)
-}
-
 // BookingHistory implements interfaces.BookingUseCase.
 func (use *BookingUseCase) BookingHistory(ctx context.Context, userid int64) (*domain.BookingHistory, error) {
 	res, err := use.Repo.BookingHistory(ctx, userid)

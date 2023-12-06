@@ -20,6 +20,4 @@ type BookingUseCase interface {
 	CancelletionTicket(ctx context.Context, ticket domain.Ticket) error
 
 	BookingHistory(ctx context.Context, userid int64) (*domain.BookingHistory, error)
-
-	ViewCompartment(ctx context.Context) ([]domain.CompartmentDetails, error)
 }
