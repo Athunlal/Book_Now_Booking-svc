@@ -258,6 +258,10 @@ func (use *BookingUseCase) SearchCompartment(ctx context.Context, trainid domain
 		CompartmentDetails: make([]domain.CompartmentDetails, len(trainData.Compartment)),
 	}
 
+	if len(trainData.Compartment) < 1 {
+		return domain.BookingResponse{}, errors.New("Compartment not found")
+	}
+
 	for i, compartment := range trainData.Compartment {
 		res, err := use.Repo.GetSeatDetails(ctx, compartment.Seatid)
 		if err != nil {
@@ -293,8 +297,7 @@ func (use *BookingUseCase) SearchCompartment(ctx context.Context, trainid domain
 
 // SearchTrain implements interfaces.BookingUseCase.
 func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
-
-	routeData, err := use.Repo.FindRouteById(ctx, searcheData)
+	routeData, err := use.Repo.FindRouteByStationId(ctx, searcheData)
 	if err != nil {
 		return domain.SearchingTrainResponseData{}, err
 	}
@@ -304,7 +307,6 @@ func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.S
 	if err != nil {
 		return domain.SearchingTrainResponseData{}, err
 	}
-
 	return trainData, err
 }
 

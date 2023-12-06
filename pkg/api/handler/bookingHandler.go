@@ -226,18 +226,7 @@ func (h *BookingHandler) SearchCompartment(ctx context.Context, req *pb.SearchCo
 			Typeofseat:        compartment.TypeOfSeat,
 			CompartmentName:   compartment.Compartment,
 			Availablitystatus: status,
-			// SeatDetails:     make([]*pb.SeatDetails, len(compartment.SeatDetails)),
 		}
-
-		// for j, seatDetail := range compartment.SeatDetails {
-		// 	pbSeatDetail := &pb.SeatDetails{
-		// 		Isreserved: strconv.FormatBool(seatDetail.IsReserved),
-		// 		Seattype:   seatDetail.SeatType,
-		// 		Seatnumber: int64(seatDetail.SeatNumbers),
-		// 	}
-		// 	pbCompartment.SeatDetails[j] = pbSeatDetail
-		// }
-
 		bookingResponse.Compartment[i] = pbCompartment
 	}
 
@@ -245,7 +234,6 @@ func (h *BookingHandler) SearchCompartment(ctx context.Context, req *pb.SearchCo
 }
 
 func (h *BookingHandler) SearchTrain(ctx context.Context, req *pb.SearchTrainRequest) (*pb.SearchTrainResponse, error) {
-
 	searchData, err := prepareSearchData(req)
 	if err != nil {
 		return handleSearchError(err)
