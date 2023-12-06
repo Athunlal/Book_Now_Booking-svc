@@ -197,6 +197,7 @@ func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.B
 	if err != nil {
 		return domain.CheckoutDetails{}, err
 	}
+
 	//fetch user data
 	userData, err := usermodule.GetUserData(use.Client, bookingData.Userid)
 	if err != nil {
@@ -254,6 +255,29 @@ func (use *BookingUseCase) SearchCompartment(ctx context.Context, trainid domain
 		return domain.BookingResponse{}, err
 	}
 
+	if len(trainData.Compartment) < 1 {
+		return domain.BookingResponse{}, errors.New("Compartment not found")
+	}
+
+	response, err := use.getSeatDetails(ctx, trainData)
+	if err != nil {
+		return domain.BookingResponse{}, nil
+	}
+
+	response = use.checkAvailablility(ctx, response)
+
+	return response, nil
+}
+
+func (use *BookingUseCase) checkAvailablility(ctx context.Context, response domain.BookingResponse) domain.BookingResponse {
+	for _, ch := range response.CompartmentDetails {
+		if ok := utils.CheckAvailableStatus(ch.SeatDetails); !ok {
+			use.Repo.UpdateAvailableStatus(ctx, ch.SeatIds, false)
+		}
+	}
+	return response
+}
+func (use *BookingUseCase) getSeatDetails(ctx context.Context, trainData domain.Train) (domain.BookingResponse, error) {
 	response := domain.BookingResponse{
 		CompartmentDetails: make([]domain.CompartmentDetails, len(trainData.Compartment)),
 	}
@@ -282,19 +306,12 @@ func (use *BookingUseCase) SearchCompartment(ctx context.Context, trainid domain
 		response.CompartmentDetails[i].SeatDetails = seatDetails
 	}
 
-	for _, ch := range response.CompartmentDetails {
-		if ok := utils.CheckAvailableStatus(ch.SeatDetails); !ok {
-			use.Repo.UpdateAvailableStatus(ctx, ch.SeatIds, false)
-		}
-	}
-
 	return response, nil
 }
 
 // SearchTrain implements interfaces.BookingUseCase.
 func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
-
-	routeData, err := use.Repo.FindRouteById(ctx, searcheData)
+	routeData, err := use.Repo.FindRouteByStationId(ctx, searcheData)
 	if err != nil {
 		return domain.SearchingTrainResponseData{}, err
 	}
@@ -304,7 +321,6 @@ func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.S
 	if err != nil {
 		return domain.SearchingTrainResponseData{}, err
 	}
-
 	return trainData, err
 }
 

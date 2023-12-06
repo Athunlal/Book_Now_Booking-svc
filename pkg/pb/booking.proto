@@ -17,6 +17,7 @@ service BookingManagement {
     rpc BookingHistory(BookingHistroyRequest)returns(BookingHistoryResponse){}
 }
 
+
 //Booking history 
 message BookingHistroyRequest{
     int64 userid = 1;

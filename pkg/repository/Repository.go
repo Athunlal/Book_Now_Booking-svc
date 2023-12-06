@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
@@ -223,14 +224,18 @@ func (db *TrainDataBase) FindTheRoutMapById(ctx context.Context, routeData domai
 }
 
 // FindTrainByRoutid implements interfaces.BookingRepo.
-func (db *TrainDataBase) FindTrainByRoutid(ctx context.Context, train domain.Train) (domain.SearchingTrainResponseData, error) {
-	var trainData domain.SearchingTrainResponseData
-
+func (db *TrainDataBase) queryTrainsByRoute(ctx context.Context, train domain.Train) (*mongo.Cursor, error) {
 	filter := bson.M{"route": train.Route}
 	cur, err := db.DB.Collection("train").Find(ctx, filter)
 	if err != nil {
-		return trainData, err
+		return nil, err
 	}
+	return cur, nil
+}
+
+func (db *TrainDataBase) mapTrainDataFromCursor(ctx context.Context, cur *mongo.Cursor) (domain.SearchingTrainResponseData, error) {
+	var trainData domain.SearchingTrainResponseData
+
 	defer cur.Close(ctx)
 
 	for cur.Next(ctx) {
@@ -246,10 +251,24 @@ func (db *TrainDataBase) FindTrainByRoutid(ctx context.Context, train domain.Tra
 		trainData.EndingtingTime = append(trainData.EndingtingTime, train.EndingtingTime)
 	}
 
+	if len(trainData.TrainId) == 0 {
+		return trainData, errors.New("No trains found for the specified route")
+	}
+
 	if err := cur.Err(); err != nil {
 		return trainData, err
 	}
+
 	return trainData, nil
+}
+
+func (db *TrainDataBase) FindTrainByRoutid(ctx context.Context, train domain.Train) (domain.SearchingTrainResponseData, error) {
+	cur, err := db.queryTrainsByRoute(ctx, train)
+	if err != nil {
+		return domain.SearchingTrainResponseData{}, err
+	}
+
+	return db.mapTrainDataFromCursor(ctx, cur)
 }
 
 // FindByStationName implements interfaces.BookingRepo.
@@ -294,7 +313,7 @@ func (db *TrainDataBase) FindroutebyName(ctx context.Context, route domain.Route
 }
 
 // SearchTrain implements interfaces.BookingRepo.
-func (db *TrainDataBase) FindRouteById(ctx context.Context, searchData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
+func (db *TrainDataBase) FindRouteByStationId(ctx context.Context, searchData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
 
 	collection := db.DB.Collection("route")
 	sourceStationID := searchData.SourceStationid
