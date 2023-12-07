@@ -16,6 +16,14 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// FindByStationName implements interfaces.BookingRepo.
+func (db *TrainDataBase) FindStationById(ctx context.Context, stationId primitive.ObjectID) (domain.Station, error) {
+	filter := bson.M{"_id": stationId}
+	var result domain.Station
+	err := db.DB.Collection("station").FindOne(ctx, filter).Decode(&result)
+	return result, err
+}
+
 // BookingHistory implements interfaces.BookingRepo.
 func (db *TrainDataBase) BookingHistory(ctx context.Context, userid int64) (*domain.BookingHistory, error) {
 	var bookingHistory domain.BookingHistory

@@ -94,20 +94,21 @@ func (h *BookingHandler) ViewTicket(ctx context.Context, req *pb.ViewTicketReque
 	}
 
 	return &pb.ViewTicketResponse{
-		Trainname:            res.Trainname,
-		Travelers:            Travelers,
-		Trainnumber:          res.Trainnumber,
-		Sourgestationid:      res.Sourcestationid.Hex(),
-		Destinationstationid: res.DestinationStationid.Hex(),
-		PnRnumber:            res.PNRnumber,
-		Userid:               res.Userid,
-		Username:             res.Username,
-		Classname:            res.Classname,
-		Compartmentid:        res.CompartmentId.Hex(),
-		Totalamount:          float32(res.TotalAmount),
-		Seatnumbers:          seatNumber,
-		Isvalide:             res.IsValide,
+		Trainname:          res.Trainname,
+		Trainnumber:        res.Trainnumber,
+		Sourestation:       res.Sourcestation,
+		Destinationstation: res.DestinationStation,
+		PnRnumber:          res.PNRnumber,
+		Username:           res.Username,
+		Classname:          res.Classname,
+		Compartment:        res.Classname,
+		SeatNumber:         0,
+		Totalamount:        float32(res.TotalAmount),
+		Seatnumbers:        seatNumber,
+		Isvalide:           res.IsValide,
+		Travelers:          Travelers,
 	}, nil
+
 }
 
 func (h *BookingHandler) UpdateAmount(ctx context.Context, req *pb.UpdateAmountRequest) (*pb.UpdateAmountResponse, error) {
@@ -161,7 +162,6 @@ func (h *BookingHandler) Payment(ctx context.Context, req *pb.PaymentRequest) (*
 }
 
 func (h *BookingHandler) Checkout(ctx context.Context, req *pb.CheckoutRequest) (*pb.CheckoutResponse, error) {
-
 	travelers := []domain.Travelers{}
 	for _, ch := range req.Travelers {
 		traveler := domain.Travelers{

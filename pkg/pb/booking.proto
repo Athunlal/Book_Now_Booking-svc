@@ -42,18 +42,18 @@ message ViewTicketRequest{
 }
 message ViewTicketResponse {
     string trainname = 1;
-    repeated Travelers travelers = 2;
     int64 trainnumber = 3;
-    string sourgestationid = 4;
-    string destinationstationid = 5;
+    string sourestation = 4;
+    string destinationstation = 5;
     int64 pnRnumber = 6;
-    int64 userid = 7;
     string username = 8;
     string classname = 9;
-    string compartmentid = 10;
+    string compartment = 10;
+    int64 seatNumber = 14;
     float totalamount = 11;
     string seatnumbers = 12;
     bool isvalide = 13;
+    repeated Travelers travelers = 2;
 }
 
 //add Amount

@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowBooking-svc/pkg/repository/interface"
+	"github.com/athunlal/bookNowBooking-svc/pkg/usecase/DAO"
 	usecase "github.com/athunlal/bookNowBooking-svc/pkg/usecase/interface"
 	"github.com/athunlal/bookNowBooking-svc/pkg/usermodule"
 	"github.com/athunlal/bookNowBooking-svc/pkg/usermodule/pb"
@@ -63,15 +65,48 @@ func (use *BookingUseCase) CancelletionTicket(ctx context.Context, ticket domain
 }
 
 // ViewTicket implements interfaces.BookingUseCase.
-func (use *BookingUseCase) ViewTicket(ctx context.Context, tickets domain.Ticket) (*domain.Ticket, error) {
-	res, err := use.Repo.GetTicketById(ctx, tickets)
+func (use *BookingUseCase) ViewTicket(ctx context.Context, tickets domain.Ticket) (*domain.TicketResponse, error) {
+
+	ticketDetails, err := use.Repo.GetTicketById(ctx, tickets)
 	if err != nil {
 		return nil, err
 	}
-	if !res.IsValide {
-		return nil, errors.New("Ticket canceld")
+
+	errCh := make(chan error)
+	wg := &sync.WaitGroup{}
+	dataCh1 := use.findStationById(ctx, wg, errCh, ticketDetails.Sourcestationid)
+	dataCh2 := use.findStationById(ctx, wg, errCh, ticketDetails.DestinationStationid)
+
+	res := DAO.BuildResponse(ticketDetails, dataCh1, dataCh2)
+
+	go func() {
+		wg.Wait()
+		close(errCh)
+	}()
+
+	if err := utils.CheckError(errCh); err != nil {
+		return nil, err
 	}
-	return &res, nil
+
+	result := <-res
+	if err := utils.IsValidTicket(result); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+func (use *BookingUseCase) findStationById(ctx context.Context, wg *sync.WaitGroup, errCh chan error, stationId primitive.ObjectID) chan string {
+	dataCh := make(chan string)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		defer close(dataCh)
+		res, err := use.Repo.FindStationById(ctx, stationId)
+		errCh <- err
+		dataCh <- res.StationName
+	}()
+	return dataCh
 }
 
 // UpdateAmount implements interfaces.BookingUseCase.
