@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -141,4 +142,19 @@ func ConvertTicketToViewBookingResponse(ticket domain.Ticket) *pb.ViewTicketResp
 		// Seatnumbers:          convertingArraytoString(ticket.SeatNumbers),
 		// Isvalide:             ticket.IsValide,
 	}
+}
+
+func IsValidTicket(result domain.TicketResponse) error {
+	if !result.IsValide {
+		return errors.New("Ticket canceld")
+	}
+	return nil
+}
+func CheckError(errCh chan error) error {
+	for err := range errCh {
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

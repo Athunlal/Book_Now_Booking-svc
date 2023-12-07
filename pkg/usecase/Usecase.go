@@ -8,6 +8,7 @@ import (
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowBooking-svc/pkg/repository/interface"
+	"github.com/athunlal/bookNowBooking-svc/pkg/usecase/DAO"
 	usecase "github.com/athunlal/bookNowBooking-svc/pkg/usecase/interface"
 	"github.com/athunlal/bookNowBooking-svc/pkg/usermodule"
 	"github.com/athunlal/bookNowBooking-svc/pkg/usermodule/pb"
@@ -73,46 +74,26 @@ func (use *BookingUseCase) ViewTicket(ctx context.Context, tickets domain.Ticket
 
 	errCh := make(chan error)
 	wg := &sync.WaitGroup{}
-
 	dataCh1 := use.findStationById(ctx, wg, errCh, ticketDetails.Sourcestationid)
 	dataCh2 := use.findStationById(ctx, wg, errCh, ticketDetails.DestinationStationid)
+
+	res := DAO.BuildResponse(ticketDetails, dataCh1, dataCh2)
 
 	go func() {
 		wg.Wait()
 		close(errCh)
 	}()
 
-	res := buildResponse(ticketDetails)
-
-	go func() {
-		res.DestinationStation = <-dataCh1
-		res.Sourcestation = <-dataCh2
-	}()
-
-	for err := range errCh {
-		if err != nil {
-			return nil, err
-		}
+	if err := utils.CheckError(errCh); err != nil {
+		return nil, err
 	}
 
-	if !res.IsValide {
-		return nil, errors.New("Ticket canceld")
+	result := <-res
+	if err := utils.IsValidTicket(result); err != nil {
+		return nil, err
 	}
-	return &res, nil
-}
 
-func buildResponse(req domain.Ticket) domain.TicketResponse {
-	var res domain.TicketResponse
-	res.Classname = req.Classname
-	res.PNRnumber = req.PNRnumber
-	res.SeatNumbers = req.SeatNumbers
-	res.Username = req.Username
-	res.TotalAmount = req.TotalAmount
-	res.Trainname = req.Trainname
-	res.Travelers = req.Travelers
-	res.Trainnumber = req.Trainnumber
-	res.IsValide = req.IsValide
-	return res
+	return &result, nil
 }
 
 func (use *BookingUseCase) findStationById(ctx context.Context, wg *sync.WaitGroup, errCh chan error, stationId primitive.ObjectID) chan string {
@@ -120,6 +101,7 @@ func (use *BookingUseCase) findStationById(ctx context.Context, wg *sync.WaitGro
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
+		defer close(dataCh)
 		res, err := use.Repo.FindStationById(ctx, stationId)
 		errCh <- err
 		dataCh <- res.StationName
