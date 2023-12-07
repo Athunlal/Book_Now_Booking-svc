@@ -16,7 +16,7 @@ type BookingUseCase interface {
 	UpdateAmount(ctx context.Context, wallet domain.UserWallet) error
 	CreateWallet(ctx context.Context, wallet domain.UserWallet) error
 
-	ViewTicket(ctx context.Context, tickets domain.Ticket) (*domain.Ticket, error)
+	ViewTicket(ctx context.Context, tickets domain.Ticket) (*domain.TicketResponse, error)
 	CancelletionTicket(ctx context.Context, ticket domain.Ticket) error
 
 	BookingHistory(ctx context.Context, userid int64) (*domain.BookingHistory, error)

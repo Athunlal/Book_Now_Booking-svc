@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowBooking-svc/pkg/repository/interface"
@@ -63,15 +64,67 @@ func (use *BookingUseCase) CancelletionTicket(ctx context.Context, ticket domain
 }
 
 // ViewTicket implements interfaces.BookingUseCase.
-func (use *BookingUseCase) ViewTicket(ctx context.Context, tickets domain.Ticket) (*domain.Ticket, error) {
-	res, err := use.Repo.GetTicketById(ctx, tickets)
+func (use *BookingUseCase) ViewTicket(ctx context.Context, tickets domain.Ticket) (*domain.TicketResponse, error) {
+
+	ticketDetails, err := use.Repo.GetTicketById(ctx, tickets)
 	if err != nil {
 		return nil, err
 	}
+
+	errCh := make(chan error)
+	wg := &sync.WaitGroup{}
+
+	dataCh1 := use.findStationById(ctx, wg, errCh, ticketDetails.Sourcestationid)
+	dataCh2 := use.findStationById(ctx, wg, errCh, ticketDetails.DestinationStationid)
+
+	go func() {
+		wg.Wait()
+		close(errCh)
+	}()
+
+	res := buildResponse(ticketDetails)
+
+	go func() {
+		res.DestinationStation = <-dataCh1
+		res.Sourcestation = <-dataCh2
+	}()
+
+	for err := range errCh {
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	if !res.IsValide {
 		return nil, errors.New("Ticket canceld")
 	}
 	return &res, nil
+}
+
+func buildResponse(req domain.Ticket) domain.TicketResponse {
+	var res domain.TicketResponse
+	res.Classname = req.Classname
+	res.PNRnumber = req.PNRnumber
+	res.SeatNumbers = req.SeatNumbers
+	res.Username = req.Username
+	res.TotalAmount = req.TotalAmount
+	res.Trainname = req.Trainname
+	res.Travelers = req.Travelers
+	res.Trainnumber = req.Trainnumber
+	res.IsValide = req.IsValide
+	return res
+}
+
+func (use *BookingUseCase) findStationById(ctx context.Context, wg *sync.WaitGroup, errCh chan error, stationId primitive.ObjectID) chan string {
+	dataCh := make(chan string)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		res, err := use.Repo.FindStationById(ctx, stationId)
+		errCh <- err
+		dataCh <- res.StationName
+	}()
+	return dataCh
 }
 
 // UpdateAmount implements interfaces.BookingUseCase.

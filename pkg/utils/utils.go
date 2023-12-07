@@ -127,18 +127,18 @@ func convertingTavelers(Travelers []domain.Travelers) []*pb.Travelers {
 
 func ConvertTicketToViewBookingResponse(ticket domain.Ticket) *pb.ViewTicketResponse {
 	return &pb.ViewTicketResponse{
-		Trainname:            ticket.Trainname,
-		Trainnumber:          ticket.Trainnumber,
-		Travelers:            convertingTavelers(ticket.Travelers),
-		Sourgestationid:      ticket.Sourcestationid.Hex(),
-		Destinationstationid: ticket.DestinationStationid.Hex(),
-		PnRnumber:            ticket.PNRnumber,
-		Userid:               ticket.Userid,
-		Username:             ticket.Username,
-		Classname:            ticket.Classname,
-		Compartmentid:        ticket.CompartmentId.Hex(),
-		Totalamount:          float32(ticket.TotalAmount),
-		Seatnumbers:          convertingArraytoString(ticket.SeatNumbers),
-		Isvalide:             ticket.IsValide,
+		// Trainname:            ticket.Trainname,
+		// Trainnumber:          ticket.Trainnumber,
+		// Travelers:            convertingTavelers(ticket.Travelers),
+		// Sourgestation:        ticket.Sourcestationid.Hex(),
+		// Destinationstationid: ticket.DestinationStationid.Hex(),
+		// PnRnumber:            ticket.PNRnumber,
+		// Userid:               ticket.Userid,
+		// Username:             ticket.Username,
+		// Classname:            ticket.Classname,
+		// Compartmentid:        ticket.CompartmentId.Hex(),
+		// Totalamount:          float32(ticket.TotalAmount),
+		// Seatnumbers:          convertingArraytoString(ticket.SeatNumbers),
+		// Isvalide:             ticket.IsValide,
 	}
 }

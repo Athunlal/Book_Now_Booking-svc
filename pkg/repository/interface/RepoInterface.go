@@ -44,4 +44,6 @@ type BookingRepo interface {
 	UpdateTicketValidateStatus(ctx context.Context, ticket domain.Ticket) error
 
 	BookingHistory(ctx context.Context, userid int64) (*domain.BookingHistory, error)
+
+	FindStationById(ctx context.Context, stationId primitive.ObjectID) (domain.Station, error)
 }
