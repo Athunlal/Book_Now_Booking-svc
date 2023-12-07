@@ -161,7 +161,6 @@ func (h *BookingHandler) Payment(ctx context.Context, req *pb.PaymentRequest) (*
 }
 
 func (h *BookingHandler) Checkout(ctx context.Context, req *pb.CheckoutRequest) (*pb.CheckoutResponse, error) {
-
 	travelers := []domain.Travelers{}
 	for _, ch := range req.Travelers {
 		traveler := domain.Travelers{

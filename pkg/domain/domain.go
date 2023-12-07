@@ -184,6 +184,24 @@ type Ticket struct {
 	Travelers            []Travelers `json:"travelers" bson:"travelers"`
 }
 
+type TicketResponse struct {
+	TicketId           primitive.ObjectID `bson:"_id,omitempty"`
+	Trainname          string             `bson:"trainname"`
+	Trainnumber        int64              `bson:"trainnumber"`
+	Sourcestation      string             `bson:"sourcestationid"`
+	DestinationStation string             `bson:"destinationstationid"`
+	PNRnumber          int64              `bson:"pnrnumber"`
+	Userid             int64              `bson:"userid"`
+	Username           string             `bson:"username"`
+	Classname          string             `bson:"classname"`
+	CompartmentId      primitive.ObjectID `bson:"compartmentid"`
+	PaymentStatus      bool
+	TotalAmount        float64 `bson:"amount"`
+	SeatNumbers        []int64 `bson:"seatnumbers"`
+	IsValide           bool
+	Travelers          []Travelers `json:"travelers" bson:"travelers"`
+}
+
 type UserWallet struct {
 	ID            primitive.ObjectID `bson:"_id,omitempty"`
 	Userid        int64              `bson:"userid,omitempty"`
