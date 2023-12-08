@@ -16,6 +16,31 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// FindTrainByDate implements interfaces.BookingRepo.
+func (db *TrainDataBase) FindTrainByDate(ctx context.Context, date string) ([]domain.Train, error) {
+	filter := bson.M{"date": bson.M{"$elemMatch": bson.M{"day": date}}}
+	cur, err := db.DB.Collection("train").Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(ctx)
+
+	var result []domain.Train
+	for cur.Next(ctx) {
+		var train domain.Train
+		if err := cur.Decode(&train); err != nil {
+			return nil, err
+		}
+		result = append(result, train)
+	}
+
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 // FindTicketByUserid implements interfaces.BookingRepo.
 func (db *TrainDataBase) FindTicketByUserid(ctx context.Context, userId int64) (*mongo.Cursor, error) {
 	filter := bson.M{"userid": userId}
@@ -212,6 +237,14 @@ func (db *TrainDataBase) FindTheRoutMapById(ctx context.Context, routeData domai
 }
 
 // FindTrainByRoutid implements interfaces.BookingRepo.
+func (db *TrainDataBase) FindTrainByRoutid(ctx context.Context, train domain.Train) ([]domain.Train, error) {
+	cur, err := db.queryTrainsByRoute(ctx, train)
+	if err != nil {
+		return []domain.Train{}, err
+	}
+
+	return db.mapTrainDataFromCursor(ctx, cur)
+}
 func (db *TrainDataBase) queryTrainsByRoute(ctx context.Context, train domain.Train) (*mongo.Cursor, error) {
 	filter := bson.M{"route": train.Route}
 	cur, err := db.DB.Collection("train").Find(ctx, filter)
@@ -220,26 +253,20 @@ func (db *TrainDataBase) queryTrainsByRoute(ctx context.Context, train domain.Tr
 	}
 	return cur, nil
 }
-
-func (db *TrainDataBase) mapTrainDataFromCursor(ctx context.Context, cur *mongo.Cursor) (domain.SearchingTrainResponseData, error) {
-	var trainData domain.SearchingTrainResponseData
+func (db *TrainDataBase) mapTrainDataFromCursor(ctx context.Context, cur *mongo.Cursor) ([]domain.Train, error) {
+	var trainData []domain.Train
 
 	defer cur.Close(ctx)
 
 	for cur.Next(ctx) {
 		var train domain.Train
 		if err := cur.Decode(&train); err != nil {
-			return trainData, err
+			return []domain.Train{}, err
 		}
-		trainData.TrainId = append(trainData.TrainId, train.TrainId.Hex())
-		trainData.TrainNames = append(trainData.TrainNames, train.TrainName)
-		trainData.TrainNumber = append(trainData.TrainNumber, train.TrainNumber)
-		trainData.Traintype = append(trainData.Traintype, train.TrainType)
-		trainData.StartingTime = append(trainData.StartingTime, train.StartingTime)
-		trainData.EndingtingTime = append(trainData.EndingtingTime, train.EndingtingTime)
+		trainData = append(trainData, train)
 	}
 
-	if len(trainData.TrainId) == 0 {
+	if len(trainData) == 0 {
 		return trainData, errors.New("No trains found for the specified route")
 	}
 
@@ -248,15 +275,6 @@ func (db *TrainDataBase) mapTrainDataFromCursor(ctx context.Context, cur *mongo.
 	}
 
 	return trainData, nil
-}
-
-func (db *TrainDataBase) FindTrainByRoutid(ctx context.Context, train domain.Train) (domain.SearchingTrainResponseData, error) {
-	cur, err := db.queryTrainsByRoute(ctx, train)
-	if err != nil {
-		return domain.SearchingTrainResponseData{}, err
-	}
-
-	return db.mapTrainDataFromCursor(ctx, cur)
 }
 
 // FindByStationName implements interfaces.BookingRepo.

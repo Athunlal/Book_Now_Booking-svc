@@ -156,3 +156,17 @@ func CheckError(errCh chan error) error {
 	}
 	return nil
 }
+
+func FilterTrainUsingDate(trainData []domain.Train, Date string) ([]domain.Train, error) {
+
+	var res []domain.Train
+	for _, val := range trainData {
+		for _, date := range val.Date {
+			if date.Day == Date {
+				res = append(res, val)
+			}
+		}
+	}
+
+	return res, nil
+}

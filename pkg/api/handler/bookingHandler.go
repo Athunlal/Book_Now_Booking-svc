@@ -277,18 +277,19 @@ func handleSearchError(err error) (*pb.SearchTrainResponse, error) {
 	}, err
 }
 
-func convertToTrainDataList(res domain.SearchingTrainResponseData) []*pb.TrainData {
+func convertToTrainDataList(res []domain.Train) []*pb.TrainData {
 	var trainDataList []*pb.TrainData
-	if len(res.TrainNames) < 1 {
+	if len(res) < 1 {
 		return nil
 	}
-	for i := range res.TrainNames {
+
+	for _, val := range res {
 		trainData := &pb.TrainData{
-			Trainid:      res.TrainId[i],
-			Trainname:    res.TrainNames[i],
-			TrainNumber:  int64(res.TrainNumber[i]),
-			StartingTime: res.StartingTime[i],
-			Endingtime:   res.EndingtingTime[i],
+			Trainid:      val.TrainId.Hex(),
+			Trainname:    val.TrainName,
+			TrainNumber:  int64(val.TrainNumber),
+			StartingTime: val.StartingTime,
+			Endingtime:   val.EndingtingTime,
 		}
 		trainDataList = append(trainDataList, trainData)
 	}
