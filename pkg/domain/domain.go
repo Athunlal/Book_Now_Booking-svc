@@ -177,6 +177,8 @@ type Ticket struct {
 	Username             string             `bson:"username"`
 	Classname            string             `bson:"classname"`
 	CompartmentId        primitive.ObjectID `bson:"compartmentid"`
+	SourceStation        string
+	DestinationStation   string
 	PaymentStatus        bool
 	TotalAmount          float64 `bson:"amount"`
 	SeatNumbers          []int64 `bson:"seatnumbers"`

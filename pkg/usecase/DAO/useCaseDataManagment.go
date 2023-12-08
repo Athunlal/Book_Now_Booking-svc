@@ -1,6 +1,11 @@
 package DAO
 
-import "github.com/athunlal/bookNowBooking-svc/pkg/domain"
+import (
+	"context"
+
+	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
 func BuildResponse(req domain.Ticket, dataCh1, dataCh2 chan string) chan domain.TicketResponse {
 	out := make(chan domain.TicketResponse)
@@ -21,4 +26,17 @@ func BuildResponse(req domain.Ticket, dataCh1, dataCh2 chan string) chan domain.
 		out <- res
 	}()
 	return out
+}
+
+func MapBookingResponse(ctx context.Context, cur *mongo.Cursor) (domain.BookingHistory, error) {
+	var bookingHistory domain.BookingHistory
+	for cur.Next(ctx) {
+		var ticket domain.Ticket
+		if err := cur.Decode(&ticket); err != nil {
+			return domain.BookingHistory{}, err
+		}
+		bookingHistory.Ticket = append(bookingHistory.Ticket, ticket)
+	}
+
+	return bookingHistory, nil
 }

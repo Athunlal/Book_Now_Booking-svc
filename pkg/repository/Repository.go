@@ -16,42 +16,22 @@ type TrainDataBase struct {
 	DB *mongo.Database
 }
 
+// FindTicketByUserid implements interfaces.BookingRepo.
+func (db *TrainDataBase) FindTicketByUserid(ctx context.Context, userId int64) (*mongo.Cursor, error) {
+	filter := bson.M{"userid": userId}
+	cur, err := db.DB.Collection("tickets").Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	return cur, err
+}
+
 // FindByStationName implements interfaces.BookingRepo.
 func (db *TrainDataBase) FindStationById(ctx context.Context, stationId primitive.ObjectID) (domain.Station, error) {
 	filter := bson.M{"_id": stationId}
 	var result domain.Station
 	err := db.DB.Collection("station").FindOne(ctx, filter).Decode(&result)
 	return result, err
-}
-
-// BookingHistory implements interfaces.BookingRepo.
-func (db *TrainDataBase) BookingHistory(ctx context.Context, userid int64) (*domain.BookingHistory, error) {
-	var bookingHistory domain.BookingHistory
-
-	filter := bson.M{"userid": userid}
-	cur, err := db.DB.Collection("tickets").Find(ctx, filter)
-	if err != nil {
-		return nil, err
-	}
-	defer cur.Close(ctx)
-
-	for cur.Next(ctx) {
-		var ticket domain.Ticket
-		if err := cur.Decode(&ticket); err != nil {
-			return nil, err
-		}
-		bookingHistory.Ticket = append(bookingHistory.Ticket, ticket)
-	}
-
-	if err := cur.Err(); err != nil {
-		return nil, err
-	}
-
-	if len(bookingHistory.Ticket) == 0 {
-		return nil, fmt.Errorf("no booking history found for user")
-	}
-
-	return &bookingHistory, nil
 }
 
 func (db *TrainDataBase) UpdateTicketValidateStatus(ctx context.Context, ticket domain.Ticket) error {

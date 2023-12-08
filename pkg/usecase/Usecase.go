@@ -21,13 +21,40 @@ type BookingUseCase struct {
 	Client pb.ProfileManagementClient
 }
 
-// BookingHistory implements interfaces.BookingUseCase.
 func (use *BookingUseCase) BookingHistory(ctx context.Context, userid int64) (*domain.BookingHistory, error) {
-	res, err := use.Repo.BookingHistory(ctx, userid)
+
+	cur, err := use.Repo.FindTicketByUserid(ctx, userid)
 	if err != nil {
 		return nil, err
 	}
-	return res, nil
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
+	bookingHistory, err := DAO.MapBookingResponse(ctx, cur)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(bookingHistory.Ticket) == 0 {
+		return nil, fmt.Errorf("no booking history found for user")
+	}
+
+	for i, ticket := range bookingHistory.Ticket {
+		res, err := use.Repo.FindStationById(ctx, ticket.Sourcestationid)
+		if err != nil {
+			return nil, err
+		}
+		res2, err := use.Repo.FindStationById(ctx, ticket.DestinationStationid)
+		if err != nil {
+			return nil, err
+		}
+		bookingHistory.Ticket[i].DestinationStation = res2.StationName
+		bookingHistory.Ticket[i].SourceStation = res.StationName
+	}
+
+	return &bookingHistory, nil
+
 }
 
 // CancelletionTicket implements interfaces.BookingUseCase.

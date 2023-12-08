@@ -5,6 +5,7 @@ import (
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type BookingRepo interface {
@@ -43,7 +44,7 @@ type BookingRepo interface {
 
 	UpdateTicketValidateStatus(ctx context.Context, ticket domain.Ticket) error
 
-	BookingHistory(ctx context.Context, userid int64) (*domain.BookingHistory, error)
-
 	FindStationById(ctx context.Context, stationId primitive.ObjectID) (domain.Station, error)
+
+	FindTicketByUserid(ctx context.Context, userId int64) (*mongo.Cursor, error)
 }
