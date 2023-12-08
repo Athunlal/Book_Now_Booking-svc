@@ -11,7 +11,7 @@ import (
 type BookingRepo interface {
 	FindbyTrainName(ctx context.Context, train domain.Train) (domain.Train, error)
 	FindByTrainNumber(tx context.Context, train domain.Train) (domain.Train, error)
-	FindTrainByRoutid(ctx context.Context, train domain.Train) (domain.SearchingTrainResponseData, error)
+	FindTrainByRoutid(ctx context.Context, train domain.Train) ([]domain.Train, error)
 	FindTrainById(ctx context.Context, train_id primitive.ObjectID) (domain.Train, error)
 
 	FindByStationName(ctx context.Context, station domain.Station) (domain.Station, error)
@@ -47,4 +47,6 @@ type BookingRepo interface {
 	FindStationById(ctx context.Context, stationId primitive.ObjectID) (domain.Station, error)
 
 	FindTicketByUserid(ctx context.Context, userId int64) (*mongo.Cursor, error)
+
+	FindTrainByDate(ctx context.Context, date string) ([]domain.Train, error)
 }

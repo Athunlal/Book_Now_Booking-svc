@@ -40,3 +40,15 @@ func MapBookingResponse(ctx context.Context, cur *mongo.Cursor) (domain.BookingH
 
 	return bookingHistory, nil
 }
+
+// func MapTrainSearchResponse(ctx context.Context, cur *mongo.Cursor) ([]domain.Train, error) {
+// 	var TrainData []domain.Ticket
+// 	for cur.Next(ctx) {
+// 		var train domain.Train
+// 		if err := cur.Decode(&train); err != nil {
+// 			return []domain.Train{}, err
+// 		}
+// 		TrainData = append(TrainData, train.)
+// 	}
+// 	return TrainData, nil
+// }

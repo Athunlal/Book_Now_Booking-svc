@@ -372,18 +372,28 @@ func (use *BookingUseCase) getSeatDetails(ctx context.Context, trainData domain.
 }
 
 // SearchTrain implements interfaces.BookingUseCase.
-func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
+func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) ([]domain.Train, error) {
 	routeData, err := use.Repo.FindRouteByStationId(ctx, searcheData)
 	if err != nil {
-		return domain.SearchingTrainResponseData{}, err
+		return []domain.Train{}, err
 	}
+
 	trainData, err := use.Repo.FindTrainByRoutid(ctx, domain.Train{
 		Route: routeData.RouteID,
 	})
 	if err != nil {
-		return domain.SearchingTrainResponseData{}, err
+		return []domain.Train{}, err
 	}
-	return trainData, err
+
+	res, err := utils.FilterTrainUsingDate(trainData, searcheData.Date)
+	if err != nil {
+		return []domain.Train{}, err
+	}
+
+	if err != nil {
+		return []domain.Train{}, err
+	}
+	return res, err
 }
 
 // ViewTrain implements interfaces.TrainUseCase.
