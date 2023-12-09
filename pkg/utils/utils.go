@@ -174,3 +174,18 @@ func FilterTrainUsingDate(trainData []domain.Train, Date string) ([]domain.Train
 
 	return res, nil
 }
+
+func IsCompartmentAllowcate(trainData []domain.Train) ([]domain.Train, error) {
+	var res []domain.Train
+	for _, val := range trainData {
+		if len(val.Compartment) > 0 {
+			res = append(res, val)
+		}
+	}
+
+	if len(res) < 1 {
+		return []domain.Train{}, errors.New("Compartment  not allowcated")
+	}
+
+	return res, nil
+}

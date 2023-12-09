@@ -146,7 +146,6 @@ func (h *BookingHandler) CreateWallet(ctx context.Context, req *pb.CreateWalletR
 }
 
 func (h *BookingHandler) Payment(ctx context.Context, req *pb.PaymentRequest) (*pb.PaymentResponse, error) {
-
 	res, err := h.useCasse.Payment(ctx, domain.Payment{
 		Userid:    req.Userid,
 		PNRnumber: req.PNRnumber,

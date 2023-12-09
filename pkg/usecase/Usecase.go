@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
-	"fmt"
+
 	"sync"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
@@ -37,7 +37,7 @@ func (use *BookingUseCase) BookingHistory(ctx context.Context, userid int64) (*d
 	}
 
 	if len(bookingHistory.Ticket) == 0 {
-		return nil, fmt.Errorf("no booking history found for user")
+		return nil, errors.New("no booking history found for user")
 	}
 
 	for i, ticket := range bookingHistory.Ticket {
@@ -198,7 +198,11 @@ func (use *BookingUseCase) deleteTicket(ctx context.Context, ticket domain.Ticke
 }
 
 func (use *BookingUseCase) getWalletData(ctx context.Context, userid int64) (*domain.UserWallet, error) {
-	return use.Repo.FetchWalletDatabyUserid(ctx, domain.UserWallet{Userid: userid})
+	res, err := use.Repo.FetchWalletDatabyUserid(ctx, domain.UserWallet{Userid: userid})
+	if err != nil {
+		return nil, errors.New("Wallet not exit")
+	}
+	return res, nil
 }
 
 func (use *BookingUseCase) getTicketData(ctx context.Context, PNRnumber int64) (domain.Ticket, error) {
@@ -207,7 +211,7 @@ func (use *BookingUseCase) getTicketData(ctx context.Context, PNRnumber int64) (
 
 func (use *BookingUseCase) updatePaymentStatus(ctx context.Context, ticket *domain.Ticket) error {
 	if ticket.PaymentStatus {
-		return fmt.Errorf("Payment already done")
+		return errors.New("Payment already done")
 	}
 	return use.Repo.UpdateTicket(ctx, domain.Ticket{
 		TicketId:      ticket.TicketId,
@@ -377,7 +381,6 @@ func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.S
 	if err != nil {
 		return []domain.Train{}, err
 	}
-	fmt.Println("===", routeData)
 
 	trainData, err := use.Repo.FindTrainByRoutid(ctx, domain.Train{
 		Route: routeData.RouteID,
@@ -391,10 +394,11 @@ func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.S
 		return []domain.Train{}, err
 	}
 
+	filterdData, err := utils.IsCompartmentAllowcate(res)
 	if err != nil {
 		return []domain.Train{}, err
 	}
-	return res, err
+	return filterdData, err
 }
 
 // ViewTrain implements interfaces.TrainUseCase.
