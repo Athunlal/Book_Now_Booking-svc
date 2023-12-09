@@ -168,5 +168,9 @@ func FilterTrainUsingDate(trainData []domain.Train, Date string) ([]domain.Train
 		}
 	}
 
+	if len(res) < 1 {
+		return []domain.Train{}, errors.New("Train not found")
+	}
+
 	return res, nil
 }

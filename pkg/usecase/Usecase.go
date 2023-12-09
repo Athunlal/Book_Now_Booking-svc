@@ -377,6 +377,7 @@ func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.S
 	if err != nil {
 		return []domain.Train{}, err
 	}
+	fmt.Println("===", routeData)
 
 	trainData, err := use.Repo.FindTrainByRoutid(ctx, domain.Train{
 		Route: routeData.RouteID,
