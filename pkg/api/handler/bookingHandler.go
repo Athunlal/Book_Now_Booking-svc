@@ -146,7 +146,6 @@ func (h *BookingHandler) CreateWallet(ctx context.Context, req *pb.CreateWalletR
 }
 
 func (h *BookingHandler) Payment(ctx context.Context, req *pb.PaymentRequest) (*pb.PaymentResponse, error) {
-
 	res, err := h.useCasse.Payment(ctx, domain.Payment{
 		Userid:    req.Userid,
 		PNRnumber: req.PNRnumber,
@@ -179,7 +178,7 @@ func (h *BookingHandler) Checkout(ctx context.Context, req *pb.CheckoutRequest) 
 		return nil, err
 	}
 
-	res, err := h.useCasse.SeatBooking(ctx, domain.BookingData{
+	res, err := h.useCasse.Checkout(ctx, domain.BookingData{
 		CompartmentId:        req.Compartmentid,
 		TrainId:              req.TrainId,
 		Userid:               req.Userid,

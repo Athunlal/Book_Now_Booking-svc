@@ -222,7 +222,7 @@ func (db *TrainDataBase) FindTrainById(ctx context.Context, train_id primitive.O
 }
 
 // FindTheRoutMapById implements interfaces.BookingRepo.
-func (db *TrainDataBase) FindTheRoutMapById(ctx context.Context, routeData domain.Route) (domain.Route, error) {
+func (db *TrainDataBase) FindRoutById(ctx context.Context, routeData domain.Route) (domain.Route, error) {
 	collectionRoute := db.DB.Collection("route")
 
 	var route domain.Route
