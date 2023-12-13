@@ -178,7 +178,7 @@ func (h *BookingHandler) Checkout(ctx context.Context, req *pb.CheckoutRequest) 
 		return nil, err
 	}
 
-	res, err := h.useCasse.SeatBooking(ctx, domain.BookingData{
+	res, err := h.useCasse.Checkout(ctx, domain.BookingData{
 		CompartmentId:        req.Compartmentid,
 		TrainId:              req.TrainId,
 		Userid:               req.Userid,

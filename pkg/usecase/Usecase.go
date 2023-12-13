@@ -240,10 +240,14 @@ func (use *BookingUseCase) updateWalletBalance(ctx context.Context, wallet *doma
 }
 
 // SeatBooking implements interfaces.BookingUseCase.
-func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.BookingData) (domain.CheckoutDetails, error) {
+func (use *BookingUseCase) Checkout(ctx context.Context, bookingData domain.BookingData) (domain.CheckoutDetails, error) {
+
+	TrainId, err := primitive.ObjectIDFromHex(bookingData.TrainId)
+	if err != nil {
+		return domain.CheckoutDetails{}, err
+	}
 
 	//fetching train data
-	TrainId, err := primitive.ObjectIDFromHex(bookingData.TrainId)
 	trainData, err := use.Repo.FindTrainById(ctx, TrainId)
 	if err != nil {
 		return domain.CheckoutDetails{}, err
@@ -251,12 +255,23 @@ func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.B
 
 	//fetching compartment data
 	Compartmentid, err := primitive.ObjectIDFromHex(bookingData.CompartmentId)
+	if err != nil {
+		return domain.CheckoutDetails{}, err
+	}
+
+	//fetch seatDetails
 	seatDetail, err := use.Repo.GetSeatDetails(ctx, Compartmentid)
 	if err != nil {
 		return domain.CheckoutDetails{}, err
 	}
 
-	price := utils.PriceCalculation(seatDetail, len(bookingData.Travelers))
+	//fetching route details by route id
+	routeDetails, err := use.Repo.FindRoutById(ctx, domain.Route{RouteId: trainData.Route})
+	if err != nil {
+		return domain.CheckoutDetails{}, err
+	}
+
+	price := utils.PriceCalculation(seatDetail, len(bookingData.Travelers), routeDetails)
 
 	//check seat availability
 	seatNumber, err := utils.CheckSeatAvailable(len(bookingData.Travelers), seatDetail)
@@ -298,8 +313,8 @@ func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.B
 		IsValide:             false,
 	}
 
+	//Create ticket
 	err = use.Repo.CreatTicket(ctx, ticket)
-
 	if err != nil {
 		return domain.CheckoutDetails{}, err
 	}

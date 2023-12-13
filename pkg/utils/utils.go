@@ -76,8 +76,13 @@ func CheckSeatAvailable(numberofTravelers int, seatData domain.Compartment2) ([]
 	return seatnumbers, nil
 }
 
-func PriceCalculation(seatDetails domain.Compartment2, numberofTraverls int) float64 {
-	return float64(seatDetails.Price) * float64(numberofTraverls)
+func PriceCalculation(seatDetails domain.Compartment2, numberofTraverls int, routeDetails domain.Route) float64 {
+	var totalDistance int
+	for _, val := range routeDetails.RouteMap {
+		totalDistance += int(val.Distance)
+	}
+	TotalPrice := (float64(seatDetails.Price) + float64(totalDistance)) * float64(numberofTraverls)
+	return TotalPrice
 }
 
 func PaymentCalculation(wallet domain.UserWallet, ticket *domain.Ticket) error {
@@ -169,7 +174,7 @@ func FilterTrainUsingDate(trainData []domain.Train, Date string) ([]domain.Train
 	}
 
 	if len(res) < 1 {
-		return []domain.Train{}, errors.New("Train not found")
+		return []domain.Train{}, errors.New("No trains found for the specified date")
 	}
 
 	return res, nil
