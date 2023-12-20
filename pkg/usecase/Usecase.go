@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
-
+	"fmt"
 	"sync"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
@@ -37,7 +37,7 @@ func (use *BookingUseCase) BookingHistory(ctx context.Context, userid int64) (*d
 	}
 
 	if len(bookingHistory.Ticket) == 0 {
-		return nil, errors.New("no booking history found for user")
+		return nil, fmt.Errorf("no booking history found for user")
 	}
 
 	for i, ticket := range bookingHistory.Ticket {
@@ -198,11 +198,7 @@ func (use *BookingUseCase) deleteTicket(ctx context.Context, ticket domain.Ticke
 }
 
 func (use *BookingUseCase) getWalletData(ctx context.Context, userid int64) (*domain.UserWallet, error) {
-	res, err := use.Repo.FetchWalletDatabyUserid(ctx, domain.UserWallet{Userid: userid})
-	if err != nil {
-		return nil, errors.New("Wallet not exit")
-	}
-	return res, nil
+	return use.Repo.FetchWalletDatabyUserid(ctx, domain.UserWallet{Userid: userid})
 }
 
 func (use *BookingUseCase) getTicketData(ctx context.Context, PNRnumber int64) (domain.Ticket, error) {
@@ -213,6 +209,7 @@ func (use *BookingUseCase) updatePaymentStatus(ctx context.Context, ticket *doma
 	if ticket.PaymentStatus {
 		return errors.New("Payment already done")
 	}
+
 	return use.Repo.UpdateTicket(ctx, domain.Ticket{
 		TicketId:      ticket.TicketId,
 		PaymentStatus: true,
@@ -240,14 +237,10 @@ func (use *BookingUseCase) updateWalletBalance(ctx context.Context, wallet *doma
 }
 
 // SeatBooking implements interfaces.BookingUseCase.
-func (use *BookingUseCase) Checkout(ctx context.Context, bookingData domain.BookingData) (domain.CheckoutDetails, error) {
-
-	TrainId, err := primitive.ObjectIDFromHex(bookingData.TrainId)
-	if err != nil {
-		return domain.CheckoutDetails{}, err
-	}
+func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.BookingData) (domain.CheckoutDetails, error) {
 
 	//fetching train data
+	TrainId, err := primitive.ObjectIDFromHex(bookingData.TrainId)
 	trainData, err := use.Repo.FindTrainById(ctx, TrainId)
 	if err != nil {
 		return domain.CheckoutDetails{}, err
@@ -255,26 +248,15 @@ func (use *BookingUseCase) Checkout(ctx context.Context, bookingData domain.Book
 
 	//fetching compartment data
 	Compartmentid, err := primitive.ObjectIDFromHex(bookingData.CompartmentId)
-	if err != nil {
-		return domain.CheckoutDetails{}, err
-	}
-
-	//fetch seatDetails
 	seatDetail, err := use.Repo.GetSeatDetails(ctx, Compartmentid)
 	if err != nil {
 		return domain.CheckoutDetails{}, err
 	}
 
-	//fetching route details by route id
-	routeDetails, err := use.Repo.FindRoutById(ctx, domain.Route{RouteId: trainData.Route})
-	if err != nil {
-		return domain.CheckoutDetails{}, err
-	}
-
-	price := utils.PriceCalculation(seatDetail, len(bookingData.Travelers), routeDetails)
+	price := utils.PriceCalculation(seatDetail, len(bookingData.Travelers))
 
 	//check seat availability
-	seatNumber, err := utils.CheckSeatAvailable(len(bookingData.Travelers), seatDetail)
+	seatNumber, err := DAO.CheckSeatAvailable(len(bookingData.Travelers), seatDetail)
 	if err != nil {
 		return domain.CheckoutDetails{}, err
 	}
@@ -313,8 +295,8 @@ func (use *BookingUseCase) Checkout(ctx context.Context, bookingData domain.Book
 		IsValide:             false,
 	}
 
-	//Create ticket
 	err = use.Repo.CreatTicket(ctx, ticket)
+
 	if err != nil {
 		return domain.CheckoutDetails{}, err
 	}
@@ -352,7 +334,7 @@ func (use *BookingUseCase) SearchCompartment(ctx context.Context, trainid domain
 
 func (use *BookingUseCase) checkAvailablility(ctx context.Context, response domain.BookingResponse) domain.BookingResponse {
 	for _, ch := range response.CompartmentDetails {
-		if ok := utils.CheckAvailableStatus(ch.SeatDetails); !ok {
+		if ok := DAO.CheckAvailableStatus(ch.SeatDetails); !ok {
 			use.Repo.UpdateAvailableStatus(ctx, ch.SeatIds, false)
 		}
 	}
@@ -391,45 +373,18 @@ func (use *BookingUseCase) getSeatDetails(ctx context.Context, trainData domain.
 }
 
 // SearchTrain implements interfaces.BookingUseCase.
-func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) ([]domain.Train, error) {
+func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
 	routeData, err := use.Repo.FindRouteByStationId(ctx, searcheData)
 	if err != nil {
-		return []domain.Train{}, err
+		return domain.SearchingTrainResponseData{}, err
 	}
-
-	trainList, err := use.searchTrainByRouteIds(ctx, routeData)
+	trainData, err := use.Repo.FindTrainByRoutid(ctx, domain.Train{
+		Route: routeData.RouteID,
+	})
 	if err != nil {
-		return []domain.Train{}, err
+		return domain.SearchingTrainResponseData{}, err
 	}
-
-	res, err := utils.FilterTrainUsingDate(trainList, searcheData.Date)
-	if err != nil {
-		return []domain.Train{}, err
-	}
-
-	filterdData, err := utils.IsCompartmentAllowcate(res)
-	if err != nil {
-		return []domain.Train{}, err
-	}
-	return filterdData, err
-}
-
-func (use *BookingUseCase) searchTrainByRouteIds(ctx context.Context, routeData []domain.RouteResult) ([]domain.Train, error) {
-	var trainList []domain.Train
-	for _, val := range routeData {
-		routeId, err := primitive.ObjectIDFromHex(val.ID)
-		if err != nil {
-			return nil, err
-		}
-		trainData, err := use.Repo.FindTrainByRoutid(ctx, domain.Train{
-			Route: routeId,
-		})
-		if err != nil && len(trainList) == 0 {
-			return nil, err
-		}
-		trainList = append(trainList, trainData...)
-	}
-	return trainList, nil
+	return trainData, err
 }
 
 // ViewTrain implements interfaces.TrainUseCase.

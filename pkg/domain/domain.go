@@ -5,10 +5,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type Date struct {
-	Day string `json:"day" bson:"day"`
-}
-
 type Train struct {
 	TrainId        primitive.ObjectID  `json:"trainid,omitempty" bson:"_id,omitempty"`
 	TrainNumber    uint                `json:"trainNumber" bson:"trainNumber,omitempty"`
@@ -17,7 +13,6 @@ type Train struct {
 	TrainType      string              `json:"traintype" bson:"traintype,omitempty"`
 	StartingTime   string              `json:"startingtime,omitempty" bson:"startingtime,omitempty"`
 	EndingtingTime string              `json:"endingtingtime,omitempty" bson:"endingtingtime,omitempty"`
-	Date           []Date              `json:"date"`
 	Distance       float32             `json:"distance" bson:"distance,omitempty"`
 	Time           primitive.Timestamp `json:"time" bson:"time,omitempty"`
 	Compartment    []Compartment       `json:"compartment,omitempty" bson:"compartment,omitempty"`
@@ -46,13 +41,11 @@ type SearchingTrainRequstedData struct {
 	SourceStationid      primitive.ObjectID `json:"sourcestationid,omitempty" bson:"sourcestationid,omitempty"`
 	DestinationStationid primitive.ObjectID `json:"destinationstationid,omitempty" bson:"destinationstationid,omitempty"`
 }
-
 type SearchingTrainResponseData struct {
 	TrainId         []string
 	TrainNames      []string           `json:"trainname" bson:"trainname,omitempty"`
 	RouteID         primitive.ObjectID `json:"routeID,omitempty" bson:"routeID,omitempty"`
 	RouteName       string
-	Date            []Date   `json:"date"`
 	TrainNumber     []uint   `json:"trainNumber" bson:"trainNumber,omitempty"`
 	Traintype       []string `json:"traintype" bson:"traintype,omitempty"`
 	StartingTime    []string `json:"startingtime,omitempty" bson:"startingtime,omitempty"`
