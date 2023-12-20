@@ -4,18 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
-	"strconv"
 	"time"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
-	"github.com/athunlal/bookNowBooking-svc/pkg/pb"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
-
-func ConvertTimestampToTime(timestamp *timestamppb.Timestamp) time.Time {
-	return timestamp.AsTime()
-}
 
 func SeateAllocation(seateData domain.SeatData) domain.Seats {
 	seateNumberStartFrom := 1
@@ -60,29 +54,8 @@ func ConvertToPrimitiveTimestamp(pbTimestamp *timestamppb.Timestamp) primitive.T
 	return primitive.Timestamp{T: uint32(seconds), I: uint32(nanos)}
 }
 
-func CheckSeatAvailable(numberofTravelers int, seatData domain.Compartment2) ([]int64, error) {
-	var seatnumbers []int64
-	for _, seat := range seatData.SeatDetails {
-		if seat.IsReserved {
-			seatnumbers = append(seatnumbers, int64(seat.SeatNumber))
-		}
-	}
-
-	if numberofTravelers > len(seatnumbers) {
-		return nil, fmt.Errorf("seat unavailable")
-	}
-
-	seatnumbers = seatnumbers[:numberofTravelers]
-	return seatnumbers, nil
-}
-
-func PriceCalculation(seatDetails domain.Compartment2, numberofTraverls int, routeDetails domain.Route) float64 {
-	var totalDistance int
-	for _, val := range routeDetails.RouteMap {
-		totalDistance += int(val.Distance)
-	}
-	TotalPrice := (float64(seatDetails.Price) + float64(totalDistance)) * float64(numberofTraverls)
-	return TotalPrice
+func PriceCalculation(seatDetails domain.Compartment2, numberofTraverls int) float64 {
+	return float64(seatDetails.Price) * float64(numberofTraverls)
 }
 
 func PaymentCalculation(wallet domain.UserWallet, ticket *domain.Ticket) error {
@@ -99,60 +72,13 @@ func GeneratePNR() int64 {
 	return int64(randomNumber)
 }
 
-func CheckAvailableStatus(seat []domain.SeatDetail) bool {
-	for _, ch := range seat {
-		if ch.IsReserved {
-			return true
-		}
-	}
-	return false
-}
-
-func convertingArraytoString(arr []int64) string {
-	var seatNumber string
-	for i, num := range arr {
-		if i == len(arr)-1 {
-			seatNumber += strconv.FormatInt(num, 10)
-		} else {
-			seatNumber += strconv.FormatInt(num, 10) + ","
-		}
-	}
-	return seatNumber
-}
-
-func convertingTavelers(Travelers []domain.Travelers) []*pb.Travelers {
-	var travelors []*pb.Travelers
-	for _, traveler := range Travelers {
-		pbTraveler := &pb.Travelers{
-			Travelername: traveler.Travelername,
-		}
-		travelors = append(travelors, pbTraveler)
-	}
-	return travelors
-}
-
-func ConvertTicketToViewBookingResponse(ticket domain.Ticket) *pb.ViewTicketResponse {
-	return &pb.ViewTicketResponse{
-		Sourestation:       ticket.SourceStation,
-		Destinationstation: ticket.DestinationStation,
-		Trainname:          ticket.Trainname,
-		Trainnumber:        ticket.Trainnumber,
-		Travelers:          convertingTavelers(ticket.Travelers),
-		PnRnumber:          ticket.PNRnumber,
-		Username:           ticket.Username,
-		Classname:          ticket.Classname,
-		Totalamount:        float32(ticket.TotalAmount),
-		Seatnumbers:        convertingArraytoString(ticket.SeatNumbers),
-		Isvalide:           ticket.IsValide,
-	}
-}
-
 func IsValidTicket(result domain.TicketResponse) error {
 	if !result.IsValide {
 		return errors.New("Ticket canceld")
 	}
 	return nil
 }
+
 func CheckError(errCh chan error) error {
 	for err := range errCh {
 		if err != nil {
@@ -160,37 +86,4 @@ func CheckError(errCh chan error) error {
 		}
 	}
 	return nil
-}
-
-func FilterTrainUsingDate(trainData []domain.Train, Date string) ([]domain.Train, error) {
-
-	var res []domain.Train
-	for _, val := range trainData {
-		for _, date := range val.Date {
-			if date.Day == Date {
-				res = append(res, val)
-			}
-		}
-	}
-
-	if len(res) < 1 {
-		return []domain.Train{}, errors.New("No trains found for the specified date")
-	}
-
-	return res, nil
-}
-
-func IsCompartmentAllowcate(trainData []domain.Train) ([]domain.Train, error) {
-	var res []domain.Train
-	for _, val := range trainData {
-		if len(val.Compartment) > 0 {
-			res = append(res, val)
-		}
-	}
-
-	if len(res) < 1 {
-		return []domain.Train{}, errors.New("Compartment  not allowcated")
-	}
-
-	return res, nil
 }

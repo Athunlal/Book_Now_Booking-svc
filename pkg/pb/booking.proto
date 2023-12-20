@@ -127,8 +127,15 @@ message compartment{
     string typeofseat =3;
     string CompartmentName =4;
     string availablitystatus = 5;
+    // repeated seatDetails seatDetails =5;
 }
-
+// message seatDetails{
+//     string price = 1;
+//     string isreserved = 2;
+//     string seattype = 3;
+//     int64 seatnumber = 4;
+// }
+//Search train 
 message SearchTrainRequest{
     string date =1;
     string sourcestationid=2;
