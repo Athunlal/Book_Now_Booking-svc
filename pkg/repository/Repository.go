@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/athunlal/bookNowBooking-svc/pkg/domain"
 	interfaces "github.com/athunlal/bookNowBooking-svc/pkg/repository/interface"
@@ -240,7 +239,7 @@ func (db *TrainDataBase) FindRoutById(ctx context.Context, routeData domain.Rout
 func (db *TrainDataBase) FindTrainByRoutid(ctx context.Context, train domain.Train) ([]domain.Train, error) {
 	cur, err := db.queryTrainsByRoute(ctx, train)
 	if err != nil {
-		return []domain.Train{}, err
+		return nil, err
 	}
 
 	return db.mapTrainDataFromCursor(ctx, cur)
@@ -319,7 +318,7 @@ func (db *TrainDataBase) FindroutebyName(ctx context.Context, route domain.Route
 }
 
 // SearchTrain implements interfaces.BookingRepo.
-func (db *TrainDataBase) FindRouteByStationId(ctx context.Context, searchData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error) {
+func (db *TrainDataBase) FindRouteByStationId(ctx context.Context, searchData domain.SearchingTrainRequstedData) ([]domain.RouteResult, error) {
 
 	collection := db.DB.Collection("route")
 	sourceStationID := searchData.SourceStationid
@@ -365,29 +364,20 @@ func (db *TrainDataBase) FindRouteByStationId(ctx context.Context, searchData do
 
 	cursor, err := collection.Aggregate(context.Background(), pipeline)
 	if err != nil {
-		return domain.SearchingTrainResponseData{}, err
+		return nil, err
 	}
 	defer cursor.Close(context.Background())
 
 	var results []domain.RouteResult
 
 	if err := cursor.All(context.Background(), &results); err != nil {
-		return domain.SearchingTrainResponseData{}, err
+		return nil, err
 	}
 
 	if len(results) == 0 {
-		return domain.SearchingTrainResponseData{}, fmt.Errorf("no route found")
+		return nil, errors.New("no route found")
 	}
-
-	routeid, err := primitive.ObjectIDFromHex(results[0].ID)
-	if err != nil {
-		return domain.SearchingTrainResponseData{}, err
-	}
-
-	return domain.SearchingTrainResponseData{
-		RouteID:   routeid,
-		RouteName: results[0].RouteName,
-	}, nil
+	return results, nil
 }
 
 // ViewTrain implements interfaces.BookingRepo.

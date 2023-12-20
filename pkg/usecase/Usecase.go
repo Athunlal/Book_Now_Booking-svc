@@ -397,14 +397,12 @@ func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.S
 		return []domain.Train{}, err
 	}
 
-	trainData, err := use.Repo.FindTrainByRoutid(ctx, domain.Train{
-		Route: routeData.RouteID,
-	})
+	trainList, err := use.searchTrainByRouteIds(ctx, routeData)
 	if err != nil {
 		return []domain.Train{}, err
 	}
 
-	res, err := utils.FilterTrainUsingDate(trainData, searcheData.Date)
+	res, err := utils.FilterTrainUsingDate(trainList, searcheData.Date)
 	if err != nil {
 		return []domain.Train{}, err
 	}
@@ -414,6 +412,24 @@ func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.S
 		return []domain.Train{}, err
 	}
 	return filterdData, err
+}
+
+func (use *BookingUseCase) searchTrainByRouteIds(ctx context.Context, routeData []domain.RouteResult) ([]domain.Train, error) {
+	var trainList []domain.Train
+	for _, val := range routeData {
+		routeId, err := primitive.ObjectIDFromHex(val.ID)
+		if err != nil {
+			return nil, err
+		}
+		trainData, err := use.Repo.FindTrainByRoutid(ctx, domain.Train{
+			Route: routeId,
+		})
+		if err != nil && len(trainList) == 0 {
+			return nil, err
+		}
+		trainList = append(trainList, trainData...)
+	}
+	return trainList, nil
 }
 
 // ViewTrain implements interfaces.TrainUseCase.

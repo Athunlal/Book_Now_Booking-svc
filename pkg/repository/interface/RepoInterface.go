@@ -17,7 +17,7 @@ type BookingRepo interface {
 	FindByStationName(ctx context.Context, station domain.Station) (domain.Station, error)
 	FindroutebyName(ctx context.Context, route domain.Route) (domain.Route, error)
 
-	FindRouteByStationId(ctx context.Context, searcheData domain.SearchingTrainRequstedData) (domain.SearchingTrainResponseData, error)
+	FindRouteByStationId(ctx context.Context, searcheData domain.SearchingTrainRequstedData) ([]domain.RouteResult, error)
 	FindRoutById(ctx context.Context, routeData domain.Route) (domain.Route, error)
 
 	GetSeatDetails(ctxctx context.Context, seatId primitive.ObjectID) (domain.Compartment2, error)
