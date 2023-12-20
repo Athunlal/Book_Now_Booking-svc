@@ -207,8 +207,9 @@ func (use *BookingUseCase) getTicketData(ctx context.Context, PNRnumber int64) (
 
 func (use *BookingUseCase) updatePaymentStatus(ctx context.Context, ticket *domain.Ticket) error {
 	if ticket.PaymentStatus {
-		return fmt.Errorf("Payment already done")
+		return errors.New("Payment already done")
 	}
+
 	return use.Repo.UpdateTicket(ctx, domain.Ticket{
 		TicketId:      ticket.TicketId,
 		PaymentStatus: true,
@@ -255,7 +256,7 @@ func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.B
 	price := utils.PriceCalculation(seatDetail, len(bookingData.Travelers))
 
 	//check seat availability
-	seatNumber, err := utils.CheckSeatAvailable(len(bookingData.Travelers), seatDetail)
+	seatNumber, err := DAO.CheckSeatAvailable(len(bookingData.Travelers), seatDetail)
 	if err != nil {
 		return domain.CheckoutDetails{}, err
 	}
@@ -333,7 +334,7 @@ func (use *BookingUseCase) SearchCompartment(ctx context.Context, trainid domain
 
 func (use *BookingUseCase) checkAvailablility(ctx context.Context, response domain.BookingResponse) domain.BookingResponse {
 	for _, ch := range response.CompartmentDetails {
-		if ok := utils.CheckAvailableStatus(ch.SeatDetails); !ok {
+		if ok := DAO.CheckAvailableStatus(ch.SeatDetails); !ok {
 			use.Repo.UpdateAvailableStatus(ctx, ch.SeatIds, false)
 		}
 	}
