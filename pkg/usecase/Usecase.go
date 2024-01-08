@@ -311,7 +311,6 @@ func (use *BookingUseCase) SeatBooking(ctx context.Context, bookingData domain.B
 	}, nil
 }
 
-// Booking implements interfaces.BookingUseCase.
 func (use *BookingUseCase) SearchCompartment(ctx context.Context, trainid domain.Train) (domain.BookingResponse, error) {
 	trainData, err := use.Repo.FindTrainById(ctx, trainid.TrainId)
 	if err != nil {
@@ -340,6 +339,7 @@ func (use *BookingUseCase) checkAvailablility(ctx context.Context, response doma
 	}
 	return response
 }
+
 func (use *BookingUseCase) getSeatDetails(ctx context.Context, trainData domain.Train) (domain.BookingResponse, error) {
 	response := domain.BookingResponse{
 		CompartmentDetails: make([]domain.CompartmentDetails, len(trainData.Compartment)),
@@ -381,6 +381,7 @@ func (use *BookingUseCase) SearchTrain(ctx context.Context, searcheData domain.S
 	trainData, err := use.Repo.FindTrainByRoutid(ctx, domain.Train{
 		Route: routeData.RouteID,
 	})
+
 	if err != nil {
 		return domain.SearchingTrainResponseData{}, err
 	}
